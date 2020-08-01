@@ -1,0 +1,68 @@
+<h1 id="to-glob-10m-metrics-trie-dfa-tree-for-go-carbon-the-graphite-storage-node-daemon-">To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)</h1>
+<p>TLDR: By combining Trie and DFA for indexing metric paths, letting two trees walking over each other, this new implementation halves the memory usage of go-carbon process (avg 57% less, from 20.5G to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5 of it with trigram index on go-carbon. This is making us a one step closer to having wholly cwhisper-powered clusters!</p>
+<h2 id="short-context">Short context</h2>
+<p>Metrics are saved as files on go-carbon (one file per metric), the graphite storage daemon.</p>
+<p>When we make a query to Graphite, like general.tuning.minutely.sys_stats.{extranet,xydapi}.host.prod.<em>.</em>.stat.cpu.all.idle.mean, before go-carbon fetches data from file, go-carbon needs to figure out what files to read from. Using filepath.Glob (a golang stdlib function for globbing files) is getting expensive when you have millions of metrics (too many syscall). The current go-carbon is using trigram indexing with filepath.Glob as fallback for fetching, which also has performance issues when metrics number rise above 10 millions.</p>
+<p>So we develop this new algorithm by using trie and dfa that has shown good potential in our tests.</p>
+<h2 id="live-test">Live test</h2>
+<p>Tested on a cwhisper cluster replica, with 9 servers in total</p>
+<ul>
+<li>Metrics count per node is ~3M</li>
+<li>5 nodes using trie+dfa, 4 nodes using trigram (graph below is using data of 4 nodes for each indexing type, i.e. the count of request should be the same)</li>
+<li>With production traffic</li>
+</ul>
+<p>Displaying data bellow with histogram to show the advantage of the new implementation (With trie+dfa, most of the 99th percentile request time is under 50ms (it&#39;s a histogram with x-axis being 99th request time in millisecond):</p>
+<p><img src="images/image4.jpg" alt=""></p>
+<h2 id="non-live-test">Non-Live Test</h2>
+<p>With queries and metric names collected from production, displaying data bellow with histogram to show the advantage of the new implementation:</p>
+<p><img src="images/image3.jpg" alt=""></p>
+<p>From the non-live test, we could see that trigram index is able to finish 57% of the queries under 100us, but  has a longer tail, comparing to Trie+DFA.</p>
+<h2 id="the-problem-more-details-">The problem (more details)</h2>
+<p>In our previous test of cwhisper (a compressed version of file format for storing Graphite metrics) on one of our graphite clusters, Alexey Zhiltsov noticed that 99th percentile of request time on cwhisper nodes (5M - 6M metrics per node) were worse than whisper clusters, because of  higher number of metrics served per box. And cwhisper makes it feasible for us to serve 10M metrics per box. So speeding up the request would make cwhisper deployment even more attractive.</p>
+<p>Then we started a discussion from which I learnt about some of the drawbacks of the current indexing implementation trigram:</p>
+<ul>
+<li><a href="https://github.com/lomik/go-carbon/issues/202">https://github.com/lomik/go-carbon/issues/202</a></li>
+<li><a href="https://github.com/lomik/go-carbon/issues/301">https://github.com/lomik/go-carbon/issues/301</a></li>
+</ul>
+<p>Therefore, I started an attempt to try out some &quot;new&quot; ideas, which ended up leading me to the new implementation of combining trie and DFA.</p>
+<h2 id="how-trigram-index-works">How trigram index works</h2>
+<p>This index is implemented by ex-Bookinger Damian Gryski, to make an unfairly simple explanation (because it’s a post about the new index ;) ): it works by generating trigrams from a metric path and then using them to build an inverted index (trigrams -&gt; metric paths). When querying is sent to go-carbon, it would also generate trigrams based on the queries, and  then intersect both sets of trigrams to filter out metrics.</p>
+<h2 id="how-trie-dfa-index-works">How trie+dfa index works</h2>
+<p>A &quot;very inaccurate&quot; description of the algorithm (reading source code is better):</p>
+<pre><code><span class="hljs-number">1.</span> Metric paths saved <span class="hljs-keyword">on</span> go-carbon are indexed <span class="hljs-keyword">using</span> compact trie (<span class="hljs-keyword">key</span> <span class="hljs-keyword">for</span> space efficiency)
+<span class="hljs-number">2.</span> Queries are broken down <span class="hljs-keyword">into</span> multiple NFA <span class="hljs-keyword">by</span> <span class="hljs-string">"."</span> (e.g.: abc.efg*.xyz -&gt; abc$, efg*$, xyz$)
+<span class="hljs-number">3.</span> Generating DFA <span class="hljs-keyword">while</span> depth-first walking <span class="hljs-keyword">on</span> the trie generated <span class="hljs-keyword">in</span> <span class="hljs-meta">#1 (current trie node is the root)</span>
+  a. Walk over every children <span class="hljs-keyword">of</span> the current trie node, go <span class="hljs-keyword">to</span> <span class="hljs-keyword">step</span> b <span class="hljs-keyword">if</span> matched <span class="hljs-keyword">is</span> found <span class="hljs-keyword">on</span> DFA; otherwise go <span class="hljs-keyword">to</span> <span class="hljs-keyword">step</span> e;
+  b. Push the current DFA state <span class="hljs-keyword">and</span> trie node <span class="hljs-keyword">to</span> a stack, go <span class="hljs-keyword">to</span> <span class="hljs-keyword">step</span> a
+  c. <span class="hljs-keyword">If</span> <span class="hljs-keyword">end</span> ($) <span class="hljs-keyword">of</span> the last DFA, <span class="hljs-keyword">and</span> a leaf <span class="hljs-keyword">or</span> <span class="hljs-string">"."</span> <span class="hljs-keyword">in</span> the index trie are reached, collect the metric;
+    c0. <span class="hljs-keyword">Continue</span> <span class="hljs-keyword">with</span> <span class="hljs-keyword">step</span> a <span class="hljs-keyword">if</span> DFA could be continued <span class="hljs-keyword">with</span> current childen trie nodes, otherwise <span class="hljs-keyword">step</span> c1;
+    c1. Pop one dfa state, <span class="hljs-keyword">continue</span> <span class="hljs-keyword">to</span> the <span class="hljs-keyword">next</span> sibling (go <span class="hljs-keyword">to</span> <span class="hljs-keyword">step</span> a) <span class="hljs-keyword">if</span> there <span class="hljs-keyword">is</span>, otherwise <span class="hljs-keyword">step</span> c2;
+    c2. Pop one dfa state, going back <span class="hljs-keyword">to</span> parent trie node, go <span class="hljs-keyword">to</span> <span class="hljs-keyword">step</span> a;
+  d. Switch <span class="hljs-keyword">to</span> <span class="hljs-keyword">next</span> NFA <span class="hljs-keyword">if</span> <span class="hljs-string">"."</span> <span class="hljs-keyword">is</span> reached, <span class="hljs-keyword">continue</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">step</span> a;
+  e. <span class="hljs-keyword">Continue</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">next</span> children <span class="hljs-keyword">if</span> there <span class="hljs-keyword">is</span>, otherwise pop DFA state <span class="hljs-keyword">and</span> trie node <span class="hljs-keyword">off</span> the stack. <span class="hljs-keyword">Exit</span> <span class="hljs-keyword">if</span> all <span class="hljs-keyword">is</span> empty.
+</code></pre><p>The main data structures:</p>
+<ul>
+<li>Trie (static and being replaced until next full disk scan every $configurable minutes)</li>
+<li>An array of NFA states and a stack of DFA states (generated on every query) (The DFA implementation is mainly inspired/copied/modified from Russ Cox’s post here: <a href="https://swtch.com/~rsc/regexp/regexp1.html">https://swtch.com/~rsc/regexp/regexp1.html</a>)</li>
+</ul>
+<p>A simple and also not so accurate illustration of the metric trie tree, NFA&amp;DFA:</p>
+<p>A NFA for the second node of query sys.{,<em>[0-9]}app{m,r,}db-*</em>_{prod,dev}_svc.mysql:</p>
+<p><img src="images/image5.png" alt=""></p>
+<p>A Trie sample with a DFA stack annotation:</p>
+<p><img src="images/image1.png" alt=""></p>
+<h2 id="pros">Pros</h2>
+<ul>
+<li>Less memory usage and faster index time</li>
+<li>Better &quot;empirical&quot; performance</li>
+<li>Easier to write a performant query (a bit stretch though ;)</li>
+<li>More scalable, can handle 10M metrics</li>
+<li>More globbing syntax could be extended relatively easier</li>
+<li>No filesystem globbing fallback</li>
+</ul>
+<h2 id="cons">Cons</h2>
+<ul>
+<li>Some queries with leading star in queries might be slowed down (from milliseconds to seconds), example:</li>
+</ul>
+<pre><code>svc<span class="hljs-selector-class">.group</span>.*.*<span class="hljs-selector-class">.haproxy</span><span class="hljs-selector-class">.server</span>.*app-*_prod<span class="hljs-selector-class">.weight</span> (notice *bookadmin part)
+</code></pre><p>Solution to this issue is either take the hit as long as the slow down isn&#39;t too bad or rewrite the query to make it performant if possible (by removing the leading star with {}; for instance, the example query could be rewritten as: <code>`svc.group.*.*.haproxy.server.{,pre1,pre2}app-*_prod.weight</code>).</p>
+<p>Full pull request you are interested in all the details: <a href="https://github.com/lomik/go-carbon/pull/303/files">https://github.com/lomik/go-carbon/pull/303/files</a></p>
