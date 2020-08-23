@@ -1,11 +1,7 @@
 
 # Xiaofan Hu's blogs
 
-Some random stuff from Xiaofan Hu.
-
-* [Twitter](https://twitter.com/bom_d_van)
-* [Github](https://github.com/bom-d-van)
-* [LinkedIn](https://www.linkedin.com/in/xiaofan-hu-9616372a/)
+Some random stuff from Xiaofan Hu [Twitter](https://twitter.com/bom_d_van), [Github](https://github.com/bom-d-van), [LinkedIn](https://www.linkedin.com/in/xiaofan-hu-9616372a/).
 
 ## Index
 
