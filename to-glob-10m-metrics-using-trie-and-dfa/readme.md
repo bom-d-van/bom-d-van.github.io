@@ -1,5 +1,9 @@
 
+[Index](/)
+
 # To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)
+
+(originally written at October 9, 2019)
 
 TLDR: By combining Trie and DFA for indexing metric paths, letting two trees walking over each other, this new implementation halves the memory usage of go-carbon process (avg 57% less, from 20.5G to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5 of it with trigram index on go-carbon. This is making us a one step closer to having wholly cwhisper-powered clusters!
 
