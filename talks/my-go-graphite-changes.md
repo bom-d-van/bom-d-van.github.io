@@ -1,5 +1,11 @@
 
-# Scaling go graphite stroage stack
+# Whispering in the trees
+
+## Scaling go graphite stroage stack
+
+Xiaofan Hu @ Booking.com
+
+(note: puns intended in the title)
 
 ---
 
@@ -26,11 +32,11 @@ copy from https://github.com/graphite-project/whisper
 
 # Graphite at Booking
 
-No longer a vanilla setup, various components are being rewritten (some more than once), for example:
+No longer a vanilla setup, various components are rewritten (some more than once), for example:
 
 - [carbonapi](https://github.com/bookingcom/carbonapi), rewritten by [Damian Gryski](https://github.com/dgryski), [Vladimir Smirnov](https://github.com/Civil) and many others.
 - relay is now [nanotube](https://github.com/bookingcom/nanotube) written by Roman Grytskiv, Gyanendra Singh and Andrei Vereha from our Graphite team, (it was preceded by [carbon-c-relay](https://github.com/grobian/carbon-c-relay) written by [Fabian Groffen](https://github.com/grobian))
-- [go-carbon for storage](https://github.com/go-graphite/go-carbon), written by [Roman Lomonosov](https://github.com/lomik)
+- [go-carbon](https://github.com/go-graphite/go-carbon) for storage, written by [Roman Lomonosov](https://github.com/lomik)
 
 My story today is mainly about the storage program: go-carbon.
 
@@ -38,7 +44,7 @@ My story today is mainly about the storage program: go-carbon.
 
 # Graphite Metric
 
-* An example graphite metric: `sys.app.host-01.cpu.loadavg`
+* An example graphite metric: `sys.cpu.loadavg.app.host-0001`
 * An example graphite retention policy: `1s:2d,1m:30d,1h:2y`
 	* size of the retentoin example: (86400*2 + 1440*30 + 24*730) * 12 = 2,802,240 bytes
 	* 1s:2d is called an archive (same for 1m:30d and 1h:2y)
@@ -47,10 +53,10 @@ My story today is mainly about the storage program: go-carbon.
 
 # What is Whisper
 
-In graphite, each metric is saved in a file, using the a round-robin database format, named whisper.
+In graphite, each metric is saved in a file, using the a round-robin database format, named whisper. Important properties:
 
-* This means that given a random timestamp and a target archive, we can infer its location in the whisper file, which means is programmably trivial to support out-of-order data and rewrite.
-* In whisper file, each data point has a fixed size of 12 bytes (4 bytes for timestamp, 8 bytes for value and yes, one more thing to fix before 2038).
+* Data ponit addressable: given a random timestamp and a target archive, its location could be infered in the whisper file, which means that it is programmably trivial to support out-of-order data and rewrite
+* Fixed size: each data point has a fixed size of 12 bytes (4 bytes for timestamp, 8 bytes for value and yes, one more thing to fix before 2038)
 
 ![whisper](../how-to-shrink-whisper-files/images/image1.png)
 
@@ -58,16 +64,22 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 
 # What is Gorilla compression
 
-![gorilla](../how-to-shrink-whisper-files/images/image2.png)
+![height:600px](../how-to-shrink-whisper-files/images/image2.png)
 
 ---
 
-# The core of the efficient algorithm
+# The core of the Gorilla algorithm
 
 * Delta encoding for timestamps
 	To be presice, it's actually the delta of delta
 * XOR for values
 	Built on the assumption that timeseries data tend to have contstant/repetitive values, or values fluctuating within a certain range, this means that XOR with the previous value often has leading and trailing zeros, and we can only save mostly just the meaningful bits
+
+---
+
+# Wild adoption of the Gorilla compression algorithm
+
+[M3DB](https://m3db.github.io/m3/m3db/), [Prometheus](https://fabxc.org/tsdb/), [Timescale](https://blog.timescale.com/blog/time-series-compression-algorithms-explained/), [VictoriaMetrics](https://medium.com/faun/victoriametrics-achieving-better-compression-for-time-series-data-than-gorilla-317bc1f95932), etc.
 
 ---
 
@@ -78,7 +90,6 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 | #1 | 1598475390  |  0 |
 | #2 | 1598475391  |  0 |
 | #3 | 1598475392  |  0 |
-| #4 | 1598475393  |  0 |
 | ... | ...  |  0 |
 | #100 | 1598475493  |  0 |
 
@@ -111,43 +122,66 @@ A new file format needs to be designed from scratch in order to compress data po
 
 # Globbing graphite metrics
 
----
+A most simple graphite query: `sys.cpu.loadavg.app.host-0*`
 
-# Using Standard library
-
-Pro: Simple
-
-Con: High performance cost in a large file tree (millions of files)
-
-Glob is a userspace implementation, so it first needs to ask the kernel returning all the files and then glob over it.
+It's basically the same as globbing in shell: `ls /sys/cpu/loadavg/app/host-0*`
 
 ---
 
-# Using Trigram
+# filepath.Match/Glob (Go stdlib)
 
-Originally implemented by Damian Gryski.
+Pro: simple to implement
+
+Con: high performance cost in a large file tree (millions of files)
+
+filepath.Glob in Go is an userspace implementation, so it first needs to ask the kernel for all the files and then globs over it. Therefore the overhead is a high when serving millions of files.
+
+---
+
+# Trigram (part 1)
+
+There is alternative implemnetation in go-carbon, which is using trigram, originally implemented by Damian Gryski.
 
 TLDR: it breaks downs all the metrics as trigrams, and maps the trigram to the metrics (an inverted index). A glob query is also convert as a trigrams, then intersects the metric trigrams and query trigrams, then it would use the glob to make sure the files match the query.
 
-Pro: faster than standard library (no syscalls after index, and file list are cached in memory)
+---
 
-Con: index is expensive to build when dealing higher number of metrics (above 5 millions or more).
+# Trigram (part 2)
 
-Minor: corner cases like if part of the metric name has one or two chars, need to use filepath.Match to double check if files are really matched, etc.
+Pro:
+
+* faster than standard library (no syscalls after index, and file list are cached in memory)
+
+Con:
+
+* index is expensive to build when dealing higher number of metrics (above 5 millions or more)
+* result returned by trigram index aren't always matching the query, so it still falls back to filepath.Match to double check
+
+(trigram itself is a pretty big topic, so sorry that I can't explain all its glory too much)
 
 ---
 
-# What is trie, NFA/DFA
+# Trie + NFA/DFA (part 1)
+
+![trie](trie.png)
+
+---
+
+# Trie + NFA/DFA (part 2)
 
 ![nfa_dfa](nfa_dfa.png)
 
-(copy from https://swtch.com/~rsc/regexp/regexp1.html)
+---
+
+# Trie + NFA/DFA (part 3)
+
+TLDR: index all the metrics in go-carbon instance with trie, compile the glob queries first as nfa (then dfa during walking). And walking over the trie and nfa/dfa at the same time.
+
+More details about nfa and dfa could be found in https://swtch.com/~rsc/regexp/regexp1.html
 
 ---
 
-# The new index solution
-
-TLDR: index all the metrics in go-carbon instance with trie, compile the glob queries first as nfa (then dfa during walking). And walking over the trie and nfa/dfa at the same time.
+# Trie + NFA/DFA (part 4)
 
 Pro:
 
@@ -164,7 +198,17 @@ Con:
 
 # Result
 
-![trie/dfa-vs-trigram](../to-glob-10m-metrics-using-trie-and-dfa/images/image3.jpg)
+![height:600px](../to-glob-10m-metrics-using-trie-and-dfa/images/image3.jpg)
+
+---
+
+# Tips
+
+Most common names should come before less common and unique names in a metric: less memory usage and faster query.
+
+`sys.cpu.loadavg.app.host-0001` performs better than `sys.app.host-0001.cpu.loadavg` using trie index + nfa/dfa.
+
+Because in the first naming pattern, `sys.cpu.loadavg` is just one copy of string in the trie index and comparison is done only once.
 
 ---
 
@@ -175,8 +219,11 @@ Challenges on rolling out Compressed Whisper
 * Out of order
 * Rewrite
 
-Trie+NFA/DFA index solution is being used
+Trie+NFA/DFA index solution made it to our production!
 
 ---
 
-# Restropection
+# Retro
+
+* Special thanks to Alexey Zhiltsov (best sysadmin) and our Graphite team!
+* It was a great learning journey developing the two new features!
