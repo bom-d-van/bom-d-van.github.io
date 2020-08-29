@@ -5,7 +5,7 @@ Some random stuff from Xiaofan Hu [Twitter](https://twitter.com/bom_d_van), [Git
 
 ## Index
 
-* Graphite/Go-Carbon works
+* graphite/go-carbon works
 	* [How To Shrink Whisper Files](how-to-shrink-whisper-files)
 	* [To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)](to-glob-10m-metrics-using-trie-and-dfa/)
 
@@ -15,3 +15,6 @@ Some random stuff from Xiaofan Hu [Twitter](https://twitter.com/bom_d_van), [Git
 
 * talks
 	* [Whispering in the trees](/talks/whispering-in-the-trees.pdf)
+
+* random
+	* [A Golang 3D Bin Packing Implementation](https://github.com/bom-d-van/binpacking)
