@@ -1,0 +1,250 @@
+<h1 id="some-bpftrace-scripts-using-perldtrace">Some bpftrace scripts using perldtrace</h1>
+<p>These are a collection of bpftrace scritpts using <a href="https://perldoc.perl.org/perldtrace.html">perldtrace</a>, used in the context running perl app using uwsgi.</p>
+<h2 id="common-pitfallscaveats">Common pitfalls/caveats</h2>
+<ul>
+<li>Lost event and BPFTRACE_STRLEN</li>
+<li>The need of a pid and uwsgi multi-processes
+<ul>
+<li>Because there is a semaphore guarding the perl dtrace calls, we have to start bpftrace command per uwsgi process, which is basically the cpu core counts on the baremetal server</li>
+</ul></li>
+<li>Kernel version (4.19 works great, I had many pains in the beginning on 4.9 that I always avoid them)</li>
+<li>512 bytes of stack size limit, so sometimes we have to live with truncated string.</li>
+<li>Misaligned stack access off: there are many reasons causing this issue. When specifying <code>BPFTRACE_STRLEN</code>, it’s better to use values like <code>64 (int % 8 == 0)</code></li>
+<li><a href="https://github.com/Perl/perl5/blob/blead/mydtrace.h#L17"><code>sub__return/loading__file/loaded__file</code></a> is reusing <code>sub__entry</code>’s semaphore, which means we need an empty <code>sub__entry</code> probe even when tracing <code>sub__return/loading__file/loaded__file</code></li>
+</ul>
+<p>Scripts/Examples</p>
+<h2 id="track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process">Track the 30 most frequent sub routine calls in the current most active uwsgi process</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="va">pid=</span><span class="kw">`</span><span class="fu">ps</span> -eo pcpu,pid,cmd <span class="kw">|</span> <span class="fu">grep</span> uw[s]gi <span class="kw">|</span> <span class="fu">sort</span> -nr <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/^ \+//&#39;</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/ \+/ /&#39;</span> <span class="kw">|</span> <span class="fu">cut</span> -d <span class="st">&#39; &#39;</span> -f 2 <span class="kw">|</span> <span class="fu">head</span> -1<span class="kw">`</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="va">BPFTRACE_STRLEN=</span>256 <span class="fu">sudo</span> bpftrace -p <span class="va">$pid</span> -e <span class="st">&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="st">usdt:/usr/lib64/libperl.so:sub__entry {</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="st">        @calls[pid, str(arg3), str(arg0)] = count();</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="st">}</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="st">interval:s:5 {</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="st">        printf(&quot;----&quot;); print(@calls, 30); clear(@calls);</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="st">}</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="st">&#39;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="ex">Get</span> wallclocks of a specific subroutine in the current most active uwsgi process</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="ex">Using</span> A::Perl::Package-<span class="op">&gt;</span>a_sub_routine as an example:</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="kw">function</span><span class="fu"> clean_up</span> <span class="kw">{</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>    <span class="bu">echo</span> <span class="st">&#39;exit: sudo pkill bpftrace&#39;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>    <span class="fu">sudo</span> pkill bpftrace</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>    <span class="bu">exit</span> 0</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="kw">}</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="bu">trap</span> clean_up INT TERM EXIT</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="kw">while</span> <span class="fu">true</span><span class="kw">;</span> <span class="kw">do</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a><span class="va">pid=</span><span class="kw">`</span><span class="fu">ps</span> -eo pcpu,pid,cmd <span class="kw">|</span> <span class="fu">grep</span> uw[s]gi <span class="kw">|</span> <span class="fu">sort</span> -nr <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/^ \+//&#39;</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/ \+/ /&#39;</span> <span class="kw">|</span> <span class="fu">cut</span> -d <span class="st">&#39; &#39;</span> -f 2 <span class="kw">|</span> <span class="fu">head</span> -1<span class="kw">`</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a><span class="bu">echo</span> <span class="st">&quot;tracing </span><span class="va">$pid</span><span class="st"> ---&quot;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a><span class="fu">sudo</span> BPFTRACE_STRLEN=64 bpftrace -p <span class="va">$pid</span> -e <span class="st">&#39;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a><span class="st">usdt:/usr/lib64/libperl.so:sub__entry {</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a><span class="st">        if (str(arg3) == &quot;A::Perl::Package&quot; &amp;&amp; str(arg0) == &quot;a_sub_routine&quot;) {</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a><span class="st">                @start = nsecs;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a><span class="st">        }</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a><span class="st">}</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a><span class="st">usdt:/usr/lib64/libperl.so:sub__return {</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a><span class="st">        if (str(arg3) == &quot;A::Perl::Package&quot; &amp;&amp; str(arg0) == &quot;a_sub_routine&quot;) {</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a><span class="st">                printf(&quot;%d %s::%s %d\n&quot;, &#39;</span><span class="va">$pid</span><span class="st">&#39;, str(arg3), str(arg0), nsecs - @start);</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a><span class="st">                @start = 0;</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true"></a><span class="st">        }</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true"></a><span class="st">}</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true"></a><span class="st">&#39;</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true"></a><span class="fu">sleep</span> 2</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true"></a><span class="kw">done</span></span></code></pre></div>
+<h2 id="get-wallclocks-of-all-subroutines-of-a-specific-modulepackage-in-the-current-most-active-uwsgi-process">Get wallclocks of all subroutines of a specific module/package in the current most active uwsgi process</h2>
+<p>Using DBI as a example:</p>
+<pre><code>function clean_up {
+    echo &#39;exit: sudo pkill bpftrace&#39;
+    sudo pkill bpftrace
+    exit 0
+}
+
+trap clean_up INT TERM EXIT
+
+while true; do
+
+pid=`ps -eo pcpu,pid,cmd | grep uw[s]gi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
+
+echo &quot;tracing $pid ---&quot;
+
+sudo BPFTRACE_STRLEN=64 bpftrace -p $pid -e &#39;
+usdt:/usr/lib64/libperl.so:sub__entry {
+        if (str(arg3, 3) == &quot;DBI&quot;) {
+                @start_ts[arg3, arg0, arg2] = nsecs;
+        }
+}
+
+usdt:/usr/lib64/libperl.so:sub__return {
+        if (str(arg3, 3) == &quot;DBI&quot; &amp;&amp; @start_ts[arg3, arg0, arg2] &gt; 0) {
+                @latencies[&#39;$pid&#39;, str(arg3), str(arg0), arg2] = hist(nsecs - @start_ts[arg3, arg0, arg2]);
+                delete(@start_ts[arg3, arg0, arg2]);
+        }
+}
+
+interval:s:5 {
+        print(@latencies);
+        clear(@latencies);
+}
+
+interval:s:30 { exit(); }
+
+END { clear(@start_ts); print(@latencies); clear(@latencies); }
+&#39;
+
+sleep 2
+
+done</code></pre>
+<h2 id="uwsgi-restart-packages-wallclocks">uwsgi restart: packages wallclocks</h2>
+<pre><code>function clean_up {
+    echo &#39;exit: sudo pkill bpftrace&#39;
+    sudo pkill bpftrace
+    exit 0
+}
+
+trap clean_up INT TERM EXIT
+
+mkdir -p uwsgi_restart_wallclock_by_package
+
+sudo bpftrace -e &#39;
+  tracepoint:syscalls:sys_enter_execve /str(args-&gt;filename) == &quot;/usr/sbin/uwsgi&quot;/ { printf(&quot;%d\n&quot;, pid) }
+  uretprobe:/usr/sbin/uwsgi:uwsgi_fork /retval &gt; 0/ { printf(&quot;%d\n&quot;, retval); }
+&#39; |
+
+while read -r pid; do
+
+if [[ &quot;$pid&quot; =~ Attaching* ]]; then
+    continue;
+fi
+
+echo &quot;tracing $pid&quot;
+
+BPFTRACE_STRLEN=64 BPFTRACE_MAP_KEYS_MAX=12800 bpftrace -p $pid -e &#39;
+BEGIN { @depth = 0 }
+
+// because loading__file/loaded__file reuses sub__entry semaphore, so we need
+// to attach a empty probe here.
+usdt:/usr/lib64/libperl.so:sub__entry {}
+
+usdt:/usr/lib64/libperl.so:perl:loading__file {
+    @start_ts[arg0] = nsecs;
+    @total_loaded_files++;
+}
+
+usdt:/usr/lib64/libperl.so:perl:loaded__file {
+    @latencies[&#39;$pid&#39;, str(arg0)] = nsecs - @start_ts[arg0];
+}
+
+END { clear(@start_ts); print(@latencies); clear(@latencies); }
+&#39; &amp;&gt;&gt; uwsgi_restart_wallclock_by_package/&quot;$pid&quot; &amp;
+
+done</code></pre>
+<h2 id="uwsgi-restart-subroutine-wallclocks">uwsgi restart: subroutine wallclocks</h2>
+<pre><code>function clean_up {
+    echo &#39;exit: sudo pkill bpftrace&#39;
+    sudo pkill bpftrace
+    exit 0
+}
+
+trap clean_up INT TERM EXIT
+
+while true; do
+
+pid=`ps -eo pcpu,pid,cmd | grep uwsgi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
+
+echo &quot;tracing $pid&quot;
+
+sudo BPFTRACE_STRLEN=64 bpftrace -p $pid -e &#39;
+usdt:/usr/lib64/libperl.so:sub__entry {
+        @start_ts[arg3, arg0, arg2] = nsecs;
+        @calls[&#39;$pid&#39;, str(arg3), str(arg0), arg2] = count();
+}
+
+usdt:/usr/lib64/libperl.so:sub__return {
+        @latencies[&#39;$pid&#39;, str(arg3), str(arg0), arg2] = hist(nsecs - @start_ts[arg3, arg0, arg2]);
+        delete(@start_ts[arg3, arg0, arg2]);
+}
+
+interval:s:10 {
+        printf(&quot;---\n&quot;);
+        print(@calls, 30);
+        print(@latencies, 30);
+        exit();
+}
+
+END { clear(@start_ts); clear(@calls); clear(@latencies); }
+&#39;
+
+sleep 2
+
+done</code></pre>
+<h2 id="unwind-perl-stacktrace-on-kernel-events">Unwind perl stacktrace on kernel events</h2>
+<p>osq_lock as example:</p>
+<pre><code>pid=`ps -eo pcpu,pid,cmd | grep uwsgi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
+
+echo &quot;tracing $pid&quot;
+
+sudo BPFTRACE_STRLEN=64 bpftrace -p $pid -e &#39;
+usdt:/usr/lib64/libperl.so:sub__entry {
+        @depth++;
+        @module[@depth] = str(arg3);
+        @sub[@depth] = str(arg0);
+        @line[@depth] = arg2;
+}
+
+usdt:/usr/lib64/libperl.so:sub__return {
+        @depth--;
+}
+
+kprobe:osq_lock {
+        if (pid == &#39;$pid&#39; &amp;&amp; @line[@depth-0] &gt; 0) {
+                printf(&quot;\n&quot;);
+                printf(&quot;%s %s %d\n&quot;, @module[@depth-0], @sub[@depth-0], @line[@depth-0]);
+        }
+}
+
+kprobe:osq_lock {
+        if (pid == &#39;$pid&#39; &amp;&amp; @line[@depth-1] &gt; 0) {
+                printf(&quot;%s %s %d\n&quot;, @module[@depth-1], @sub[@depth-1], @line[@depth-1]);
+        }
+}
+
+kprobe:osq_lock {
+        if (pid == &#39;$pid&#39; &amp;&amp; @line[@depth-2] &gt; 0) {
+                printf(&quot;%s %s %d\n&quot;, @module[@depth-2], @sub[@depth-2], @line[@depth-2]);
+        }
+}
+
+kprobe:osq_lock {
+        if (pid == &#39;$pid&#39; &amp;&amp; @line[@depth-3] &gt; 0) {
+                printf(&quot;%s %s %d\n&quot;, @module[@depth-3], @sub[@depth-3], @line[@depth-3]);
+        }
+}
+
+END { clear(@module); clear(@sub); clear(@line); }
+&#39;</code></pre>
+<h2 id="using-uwsgi_request-on-new-request">Using uwsgi_request on new request</h2>
+<pre><code>sudo bpftrace -e &#39;
+struct uwsgi_request {
+    char padding[192];
+    char *uri;
+    uint16_t uri_len;
+};
+
+
+uprobe:/usr/lib64/libperl.so:psgi_response {
+    printf(&quot;%s\n&quot;, str(((uwsgi_request*)arg0)-&gt;uri));
+}
+&#39; -v</code></pre>
+<h2 id="enabling-perldtrace">Enabling perldtrace</h2>
+<p>Some simple commands to install bpftrace:</p>
+<p>Note: make sure that your kernel is &gt;= 4.19. Things doesn’t work as smooth for lower kernel versions.</p>
+<pre><code>sudo yum install bpftrace &quot;kernel-devel-uname-r == $(uname -r)&quot;</code></pre>

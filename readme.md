@@ -10,5 +10,5 @@ Some random stuff from Xiaofan Hu [Twitter](https://twitter.com/bom_d_van), [Git
 	* [To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)](to-glob-10m-metrics-using-trie-and-dfa/)
 
 * bpftrace (and perldtrace)
-	* [wip: bpftrace+perldtrace script collections]()
-	* [wip: Debugging]()
+	* [bpftrace+perldtrace usages](/bpftrace/perldtrace.html)
+	* [Debugging kernel cpu time with luck, unwinding perl stack with bpftrace](/bpftrace/debug_osq_lock.html)

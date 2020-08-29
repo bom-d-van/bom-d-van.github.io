@@ -1,7 +1,7 @@
 
 # Whispering in the trees
 
-## Scaling go graphite stroage stack
+## Scaling go-carbon, the go-graphite stroage stack at Booking.com
 
 Xiaofan Hu @ Booking.com
 
@@ -17,16 +17,16 @@ Xiaofan Hu @ Booking.com
 
 Graphite is a time-series database. It was originally written in python (mainly), the whole tool consists of multiple components like:
 
-- frontend carbon api for returning timeseries data or graphite-web for rendering graph
-- relay (for scaling and duplicating data)
-- storage: carbon and whisper
-- admin tooling: buckytools
+* frontend carbon api for returning timeseries data or graphite-web for rendering graph
+* relay (for scaling and duplicating data)
+* storage: carbon and whisper
+* admin tooling: buckytools
 
 ---
 
 ![height:600px](architecture.png)
 
-copy from https://github.com/graphite-project/whisper
+credit: https://github.com/graphite-project/whisper
 
 ---
 
@@ -34,9 +34,9 @@ copy from https://github.com/graphite-project/whisper
 
 No longer a vanilla setup, various components are rewritten (some more than once), for example:
 
-- [carbonapi](https://github.com/bookingcom/carbonapi), rewritten by [Damian Gryski](https://github.com/dgryski), [Vladimir Smirnov](https://github.com/Civil) and many others.
-- relay is now [nanotube](https://github.com/bookingcom/nanotube) written by Roman Grytskiv, Gyanendra Singh and Andrei Vereha from our Graphite team, (it was preceded by [carbon-c-relay](https://github.com/grobian/carbon-c-relay) written by [Fabian Groffen](https://github.com/grobian))
-- [go-carbon](https://github.com/go-graphite/go-carbon) for storage, written by [Roman Lomonosov](https://github.com/lomik)
+* [carbonapi](https://github.com/bookingcom/carbonapi), rewritten by [Damian Gryski](https://github.com/dgryski), [Vladimir Smirnov](https://github.com/Civil) and many others.
+* relay is now [nanotube](https://github.com/bookingcom/nanotube) written by Roman Grytskiv, Gyanendra Singh and Andrei Vereha from our Graphite team, (it was preceded by [carbon-c-relay](https://github.com/grobian/carbon-c-relay) written by [Fabian Groffen](https://github.com/grobian))
+* [go-carbon](https://github.com/go-graphite/go-carbon) for storage, written by [Roman Lomonosov](https://github.com/lomik)
 
 My story today is mainly about the storage program: go-carbon.
 
@@ -64,7 +64,9 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 
 # What is Gorilla compression
 
-![height:600px](../how-to-shrink-whisper-files/images/image2.png)
+* An compression algorithm published in VLDB '15: Gorilla: Facebook's Fast, Scalable, In-Memory Time Series Database
+* It has great compression performace for time series data (even though it's payload dependent)
+* It has seen wide adoption since then: [M3DB](https://m3db.github.io/m3/m3db/), [Prometheus](https://fabxc.org/tsdb/), [Timescale](https://blog.timescale.com/blog/time-series-compression-algorithms-explained/), [VictoriaMetrics](https://medium.com/faun/victoriametrics-achieving-better-compression-for-time-series-data-than-gorilla-317bc1f95932), etc.
 
 ---
 
@@ -77,13 +79,11 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 
 ---
 
-# Wild adoption of the Gorilla compression algorithm
-
-[M3DB](https://m3db.github.io/m3/m3db/), [Prometheus](https://fabxc.org/tsdb/), [Timescale](https://blog.timescale.com/blog/time-series-compression-algorithms-explained/), [VictoriaMetrics](https://medium.com/faun/victoriametrics-achieving-better-compression-for-time-series-data-than-gorilla-317bc1f95932), etc.
+![height:600px](../how-to-shrink-whisper-files/images/image2.png)
 
 ---
 
-# Best case Example
+# Best case example
 
 | # | Timestamp  | Value  |
 |---|---|---|---|
@@ -204,7 +204,7 @@ Con:
 
 # Tips
 
-Most common names should come before less common and unique names in a metric: less memory usage and faster query.
+More common names should come before less common and unique names in the metric: less memory usage and faster query.
 
 `sys.cpu.loadavg.app.host-0001` performs better than `sys.app.host-0001.cpu.loadavg` using trie index + nfa/dfa.
 
@@ -214,16 +214,16 @@ Because in the first naming pattern, `sys.cpu.loadavg` is just one copy of strin
 
 # Production and Community usage status
 
-Challenges on rolling out Compressed Whisper
-
-* Out of order
-* Rewrite
-
-Trie+NFA/DFA index solution made it to our production!
+* Challenges on rolling out compressed whisper
+	* Out of order
+	* Rewrite
+* Trie+NFA/DFA index solution made it to our production!
 
 ---
 
 # Retro
 
 * Special thanks to Alexey Zhiltsov (best sysadmin) and our Graphite team!
-* It was a great learning journey developing the two new features!
+* It was a great learning journey developing the two features!
+* Challenging/Improving existing stack is hard
+* Testing, debugging and tooling is important!
