@@ -9,7 +9,10 @@ Xiaofan Hu @ Booking.com
 
 ---
 
-# Disclaimer
+# Context
+
+* I'm not one of the Graphite service owner
+* It's a vertical scaling story
 
 ---
 
@@ -17,7 +20,7 @@ Xiaofan Hu @ Booking.com
 
 Graphite is a time-series database. It was originally written in python (mainly), the whole tool consists of multiple components like:
 
-* frontend carbon api for returning timeseries data or graphite-web for rendering graph
+* frontend carbon API for returning timeseries data or graphite-web for rendering graph
 * relay (for scaling and duplicating data)
 * storage: carbon and whisper
 * admin tooling: buckytools
@@ -34,28 +37,35 @@ credit: https://github.com/graphite-project/whisper
 
 No longer a vanilla setup, various components are rewritten (some more than once), for example:
 
-* [carbonapi](https://github.com/bookingcom/carbonapi), rewritten by [Damian Gryski](https://github.com/dgryski), [Vladimir Smirnov](https://github.com/Civil) and many others.
-* relay is now [nanotube](https://github.com/bookingcom/nanotube) written by Roman Grytskiv, Gyanendra Singh and Andrei Vereha from our Graphite team, (it was preceded by [carbon-c-relay](https://github.com/grobian/carbon-c-relay) written by [Fabian Groffen](https://github.com/grobian))
+* [carbonapi](https://github.com/go-carbon/carbonapi)/[bookingcom fork](https://github.com/bookingcom/carbonapi), rewritten by [Damian Gryski](https://github.com/dgryski), [Vladimir Smirnov](https://github.com/Civil) and many others.
+* relay is now [nanotube](https://github.com/bookingcom/nanotube) written by [Roman Grytskiv](https://github.com/grzkv), [Andrei Vereha](https://github.com/avereha), and [Gyanendra Singh](https://github.com/gksinghjsr) from our Graphite team, (it was preceded by [carbon-c-relay](https://github.com/grobian/carbon-c-relay) written by [Fabian Groffen](https://github.com/grobian))
 * [go-carbon](https://github.com/go-graphite/go-carbon) for storage, written by [Roman Lomonosov](https://github.com/lomik)
 
 My story today is mainly about the storage program: go-carbon.
 
 ---
 
-# Graphite Metric
+# Just as an exploration
 
-* An example graphite metric: `sys.cpu.loadavg.app.host-0001`
-* An example graphite retention policy: `1s:2d,1m:30d,1h:2y`
-	* size of the retentoin example: (86400*2 + 1440*30 + 24*730) * 12 = 2,802,240 bytes
+I came upon our graphite go stack in a hackathon in 2018. Then later that year I learned about the Gorilla timeseries data compression algorithm. When I tried to figure out what compression algorithm graphite is using, I noticed that it's not compressing data. So I decided to give it a shot by introducing the algorithm to the system.
+
+---
+
+# Graphite Metric Basics
+
+* An example of graphite metric: `sys.cpu.loadavg.app.host-0001`
+* An example of graphite retention policy and aggregation policy: `1s:2d,1m:30d,1h:2y avg`
+	* size of the retention example: (86400\*2 + 1440\*30 + 24\*730) \* 12 = 2,802,240 bytes
 	* 1s:2d is called an archive (same for 1m:30d and 1h:2y)
+* A typical graphite data point: `1600027497: 42` (a 32 bit timestamp and a 64 bit value)
 
 ---
 
 # What is Whisper
 
-In graphite, each metric is saved in a file, using the a round-robin database format, named whisper. Important properties:
+In graphite, each metric is saved in a file, using the a round-robin database format, named [whisper](https://www.aosabook.org/en/graphite.html). Important properties:
 
-* Data ponit addressable: given a random timestamp and a target archive, its location could be infered in the whisper file, which means that it is programmably trivial to support out-of-order data and rewrite
+* Data point addressable: given a random timestamp and a target archive, its location could be inferred in the whisper file, which means that it is programmably trivial to support out-of-order data and rewrite
 * Fixed size: each data point has a fixed size of 12 bytes (4 bytes for timestamp, 8 bytes for value and yes, one more thing to fix before 2038)
 
 ![whisper](../how-to-shrink-whisper-files/images/image1.png)
@@ -64,8 +74,8 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 
 # What is Gorilla compression
 
-* An compression algorithm published in VLDB '15: Gorilla: Facebook's Fast, Scalable, In-Memory Time Series Database
-* It has great compression performace for time series data (even though it's payload dependent)
+* An compression algorithm published in VLDB '15: Gorilla: [Facebook's Fast, Scalable, In-Memory Time Series Database](https://www.vldb.org/pvldb/vol8/p1816-teller.pdf)
+* It has great compression performance for time series data (__payload dependent__)
 * It has seen wide adoption since then: [M3DB](https://m3db.github.io/m3/m3db/), [Prometheus](https://fabxc.org/tsdb/), [Timescale](https://blog.timescale.com/blog/time-series-compression-algorithms-explained/), [VictoriaMetrics](https://medium.com/faun/victoriametrics-achieving-better-compression-for-time-series-data-than-gorilla-317bc1f95932), etc.
 
 ---
@@ -73,9 +83,9 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 # The core of the Gorilla algorithm
 
 * Delta encoding for timestamps
-	To be presice, it's actually the delta of delta
+	To be precise, it's actually the delta of delta
 * XOR for values
-	Built on the assumption that timeseries data tend to have contstant/repetitive values, or values fluctuating within a certain range, this means that XOR with the previous value often has leading and trailing zeros, and we can only save mostly just the meaningful bits
+	Built on the assumption that time series data tend to have constant/repetitive values, or values fluctuating within a certain range, this means that XOR with the previous value often has leading and trailing zeros, and we can only save mostly just the meaningful bits
 
 ---
 
@@ -85,19 +95,19 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 
 # Best case example
 
-| # | Timestamp  | Value  |
+| # | timestamp  | value  |
 |---|---|---|---|
-| #1 | 1598475390  |  0 |
-| #2 | 1598475391  |  0 |
-| #3 | 1598475392  |  0 |
+| #1 | 1600000000  |  0 |
+| #2 | 1600000001  |  0 |
+| #3 | 1600000002  |  0 |
 | ... | ...  |  0 |
-| #100 | 1598475493  |  0 |
+| #100 | 1600000099  |  0 |
 
-With the compression algorithms introduced in the gorilla paper, orther than the first two data points, the rest of them could be compressed with 2 bits.
+With the compression algorithms introduced in the gorilla paper, other than the first two data points, the rest of them could be compressed with 2 bits.
 
 ---
 
-# How to comibine Gorilla and Whisper
+# How to combine Gorilla and Whisper
 
 A new file format needs to be designed from scratch in order to compress data points using the gorilla algorithm.
 
@@ -120,6 +130,12 @@ A new file format needs to be designed from scratch in order to compress data po
 
 ---
 
+# New challenge
+
+While now that go-carbon can save 10+ million metrics in a single instance, the query index (trigram index) that we are using on production is a new ceiling. This was one of th reason that in practice, our go-carbon instance didn't usually serve more 5 millions metrics.
+
+---
+
 # Globbing graphite metrics
 
 A most simple graphite query: `sys.cpu.loadavg.app.host-0*`
@@ -134,13 +150,13 @@ Pro: simple to implement
 
 Con: high performance cost in a large file tree (millions of files)
 
-filepath.Glob in Go is an userspace implementation, so it first needs to ask the kernel for all the files and then globs over it. Therefore the overhead is a high when serving millions of files.
+`filepath.Glob` in Go is an userspace implementation, so it first needs to ask the kernel for all the files and then globs over it. Therefore the overhead is a high when serving millions of files.
 
 ---
 
 # Trigram (part 1)
 
-There is alternative implemnetation in go-carbon, which is using trigram, originally implemented by Damian Gryski.
+There is alternative implementation in go-carbon, which is using trigram, originally implemented by Damian Gryski.
 
 TLDR: it breaks downs all the metrics as trigrams, and maps the trigram to the metrics (an inverted index). A glob query is also convert as a trigrams, then intersects the metric trigrams and query trigrams, then it would use the glob to make sure the files match the query.
 
@@ -155,7 +171,7 @@ Pro:
 Con:
 
 * index is expensive to build when dealing higher number of metrics (above 5 millions or more)
-* result returned by trigram index aren't always matching the query, so it still falls back to filepath.Match to double check
+* result returned by trigram index aren't always matching the query, so it still falls back to `filepath.Match` to double check
 
 (trigram itself is a pretty big topic, so sorry that I can't explain all its glory too much)
 
@@ -175,9 +191,9 @@ Con:
 
 # Trie + NFA/DFA (part 3)
 
-TLDR: index all the metrics in go-carbon instance with trie, compile the glob queries first as nfa (then dfa during walking). And walking over the trie and nfa/dfa at the same time.
+TLDR: index all the metrics in go-carbon instance with trie, compile the glob queries first as NFA (then DFA during walking). And walking over the trie and NFA/DFA at the same time.
 
-More details about nfa and dfa could be found in https://swtch.com/~rsc/regexp/regexp1.html
+More details about NFA and DFA could be found in https://swtch.com/~rsc/regexp/regexp1.html
 
 ---
 
@@ -192,7 +208,7 @@ Pro:
 
 Con:
 
-* Certain types of queries are faster using trigram (like foo.*bar.zoo, because of the leading star, the new index algorithm needs to travel the whole namespace, however, arguably, you can design your metric namespace properly to avoid this issue)
+* Certain types of queries are faster using trigram (like `foo.*bar.zoo`, because of the leading star, the new index algorithm needs to travel the whole namespace, however, arguably, you can design your metric namespace properly to avoid this issue)
 
 ---
 
@@ -212,18 +228,26 @@ Because in the first naming pattern, `sys.cpu.loadavg` is just one copy of strin
 
 ---
 
-# Production and Community usage status
+# Usage
 
-* Challenges on rolling out compressed whisper
+* Challenges on rolling out compressed whisper at Booking
 	* Out of order
 	* Rewrite
 * Trie+NFA/DFA index solution made it to our production!
 
 ---
 
+# Debugging and testing
+
+* For working on new file format, being able to analyze the bytes and tooling for migrations: [cmd/compare](https://github.com/go-graphite/go-whisper/blob/master/cmd/compare.go), [cmd/dump](https://github.com/go-graphite/go-whisper/blob/master/cmd/dump.go), etc
+* Testing using production queries
+* Fuzzing and randomized input
+
+---
+
 # Retro
 
-* Special thanks to Alexey Zhiltsov (best sysadmin) and our Graphite team!
-* It was a great learning journey developing the two features!
-* Challenging/Improving existing stack is hard
+* Special thanks to [Alexey Zhiltsov](https://github.com/azhiltsov) (best sysadmin) and our Graphite team!
+* It was a great learning journey: designing and implementing the technologies!
+* Challenging/improving existing stack is hard
 * Testing, debugging and tooling is important!
