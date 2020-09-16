@@ -192,7 +192,6 @@ More details about NFA and DFA could be found in https://swtch.com/~rsc/regexp/r
 
 ![nfa](nfa.png)
 
-
 ---
 
 # DFA: dynamically converting from nfa while walking trie index tree
@@ -235,9 +234,11 @@ Because in the first naming pattern, `sys.cpu.loadavg` is just one copy of strin
 # Usage
 
 * Challenges on rolling out compressed whisper at Booking
-	* Out of order
+	* Out of order (it's limited and depends on retention policy in cwhisper)
 	* Rewrite
 * Trie+NFA/DFA index solution made it to our production!
+
+note: for ooo and rewrite support, most of the timeseries database shares the same drawback. it's all about tradeoff like all other CS techs. You can't eat your cake and have it too.
 
 ---
 
@@ -251,7 +252,6 @@ Because in the first naming pattern, `sys.cpu.loadavg` is just one copy of strin
 
 # Retro
 
-* Special thanks to [Alexey Zhiltsov](https://github.com/azhiltsov) (best sysadmin) and our Graphite team!
-* It was a great learning journey: designing and implementing the technologies!
-* Challenging/improving existing stack is hard
-* Testing, debugging and tooling is important!
+* Special thanks to [Alexey Zhiltsov](https://github.com/azhiltsov) (best sysadmin) and our Graphite team
+* Study a problem well and applying well-researched algorithms onto existing system could yield nice result
+* It was a great learning journey
