@@ -11,9 +11,6 @@ Xiaofan Hu @ Booking.com
 
 # Context
 
-* I'm not one of the Graphite service owner
-* It's a vertical scaling story
-
 ---
 
 # What is Graphite
@@ -35,7 +32,7 @@ credit: https://github.com/graphite-project/whisper
 
 # Graphite at Booking
 
-No longer a vanilla setup, various components are rewritten (some more than once), for example:
+No longer a vanilla setup, various of components are rewritten (some more than once), for example:
 
 * [carbonapi](https://github.com/go-carbon/carbonapi)/[bookingcom fork](https://github.com/bookingcom/carbonapi), rewritten by [Damian Gryski](https://github.com/dgryski), [Vladimir Smirnov](https://github.com/Civil) and many others.
 * relay is now [nanotube](https://github.com/bookingcom/nanotube) written by [Roman Grytskiv](https://github.com/grzkv), [Andrei Vereha](https://github.com/avereha), and [Gyanendra Singh](https://github.com/gksinghjsr) from our Graphite team, (it was preceded by [carbon-c-relay](https://github.com/grobian/carbon-c-relay) written by [Fabian Groffen](https://github.com/grobian))
@@ -55,7 +52,7 @@ I came upon our graphite go stack in a hackathon in 2018. Then later that year I
 
 * An example of graphite metric: `sys.cpu.loadavg.app.host-0001`
 * An example of graphite retention policy and aggregation policy: `1s:2d,1m:30d,1h:2y avg`
-	* size of the retention example: (86400\*2 + 1440\*30 + 24\*730) \* 12 = 2,802,240 bytes
+	* size of the retention example: (86400\*2 + 1440\*30 + 24\*730) \* 12 = 2,802,240 bytes (the first archive accounts for 74% of its final size)
 	* 1s:2d is called an archive (same for 1m:30d and 1h:2y)
 * A typical graphite data point: `1600027497: 42` (a 32 bit timestamp and a 64 bit value)
 
@@ -66,7 +63,7 @@ I came upon our graphite go stack in a hackathon in 2018. Then later that year I
 In graphite, each metric is saved in a file, using the a round-robin database format, named [whisper](https://www.aosabook.org/en/graphite.html). Important properties:
 
 * Data point addressable: given a random timestamp and a target archive, its location could be inferred in the whisper file, which means that it is programmably trivial to support out-of-order data and rewrite
-* Fixed size: each data point has a fixed size of 12 bytes (4 bytes for timestamp, 8 bytes for value and yes, one more thing to fix before 2038)
+* Fixed size: each data point has a fixed size of 12 bytes
 
 ![whisper](../how-to-shrink-whisper-files/images/image1.png)
 
@@ -103,7 +100,7 @@ In graphite, each metric is saved in a file, using the a round-robin database fo
 | ... | ...  |  0 |
 | #100 | 1600000099  |  0 |
 
-With the compression algorithms introduced in the gorilla paper, other than the first two data points, the rest of them could be compressed with 2 bits.
+With the compression algorithms introduced in the gorilla paper, other than the first two data points, the rest of them could be compressed with 2 bits (768 bits if uncompressed).
 
 ---
 
@@ -119,7 +116,7 @@ A new file format needs to be designed from scratch in order to compress data po
 
 * Still a round robin database
 * File size isn't fixed (would grow/extend over time)
-* Archives are split into many blocks (ideally consist of 7200 data points per archive)
+* Archives are split into many blocks (ideally consist of 7200 data points per block)
 * No longer data point addressable (means hard to support rewrite and limited out-of-order range)
 
 ---
@@ -177,19 +174,19 @@ Con:
 
 ---
 
-# Trie + NFA/DFA (part 1)
+# Trie: indexing all the metrics
 
 ![trie](trie.png)
 
 ---
 
-# Trie + NFA/DFA (part 2)
+# NFA/DFA: representing the globbing expressions
 
 ![nfa_dfa](nfa_dfa.png)
 
 ---
 
-# Trie + NFA/DFA (part 3)
+# Trie + NFA/DFA
 
 TLDR: index all the metrics in go-carbon instance with trie, compile the glob queries first as NFA (then DFA during walking). And walking over the trie and NFA/DFA at the same time.
 
@@ -197,7 +194,7 @@ More details about NFA and DFA could be found in https://swtch.com/~rsc/regexp/r
 
 ---
 
-# Trie + NFA/DFA (part 4)
+# Trie + NFA/DFA
 
 Pro:
 
