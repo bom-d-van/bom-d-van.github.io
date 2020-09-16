@@ -174,23 +174,30 @@ Con:
 
 ---
 
+# Trie + NFA/DFA
+
+TLDR: index all the metrics in go-carbon instance with trie, compile the glob queries first as NFA (then DFA during walking). And walking over the trie and NFA/DFA at the same time.
+
+More details about NFA and DFA could be found in https://swtch.com/~rsc/regexp/regexp1.html
+
+---
+
 # Trie: indexing all the metrics
 
 ![trie](trie.png)
 
 ---
 
-# NFA/DFA: representing the globbing expressions
+# NFA: representing the globbing expressions
 
-![nfa_dfa](nfa_dfa.png)
+![nfa](nfa.png)
+
 
 ---
 
-# Trie + NFA/DFA
+# DFA: dynamically converting from nfa while walking trie index tree
 
-TLDR: index all the metrics in go-carbon instance with trie, compile the glob queries first as NFA (then DFA during walking). And walking over the trie and NFA/DFA at the same time.
-
-More details about NFA and DFA could be found in https://swtch.com/~rsc/regexp/regexp1.html
+![dfa](dfa.png)
 
 ---
 
@@ -205,7 +212,7 @@ Pro:
 
 Con:
 
-* Certain types of queries are faster using trigram (like `foo.*bar.zoo`, because of the leading star, the new index algorithm needs to travel the whole namespace, however, arguably, you can design your metric namespace properly to avoid this issue)
+* Certain types of queries are faster using trigram (like `foo.*bar.zoo`, because of the leading star, the new index algorithm needs to travel the whole namespace, however, arguably, you can design your metric namespace properly to avoid these types of query)
 
 ---
 

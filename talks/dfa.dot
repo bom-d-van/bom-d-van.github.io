@@ -1,0 +1,12 @@
+
+digraph dfa {
+	label="sys.cpu.loadavg.app.host-{1001,2001}";
+	rankdir=LR;
+	size="8,5"
+	node [shape = doublecircle]; root match;
+	node [shape = circle];
+	root [label = "root"];
+	root -> s1 [label = "host-"];
+	s1 -> s2 [label = "1001,2001"];
+	s2 -> match;
+}

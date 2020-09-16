@@ -1,0 +1,47 @@
+// graph TD
+//     A(/) -->|app| B(/)
+//     B --> |cpu| C(/)
+//     C --> |loadavg| D(/)
+//     D --> |app| E(/)
+//     E --> |host-000| F(.)
+//     F --> |1| G($)
+//     F --> |2| H($)
+//     F --> |3| I($)
+//     F --> |4| J($)
+//
+// sys.cpu.loadavg.app.host-0001
+
+digraph trie {
+	label="sys.cpu.loadavg.app.host-0001";
+	rankdir=LR;
+	size="8,5"
+	node [shape = circle];
+
+	root [label = "/"];
+	app [label = "/"];
+	root -> sys [label = "sys"];
+
+	cpu [label = "/"];
+	sys -> cpu [label = "cpu"];
+
+	loadavg [label = "/"];
+	cpu -> loadavg [label = "loadavg"];
+
+	app [label = "/"];
+	loadavg -> app [label = "app"];
+
+	host_000 [label = "."];
+	app -> host_000 [label = "host_000"];
+
+	host_0001 [label = "$"];
+	host_000 -> host_0001 [label = "1"];
+
+	host_0002 [label = "$"];
+	host_000 -> host_0002 [label = "2"];
+
+	host_0003 [label = "$"];
+	host_000 -> host_0003 [label = "3"];
+
+	host_0004 [label = "$"];
+	host_000 -> host_0004 [label = "4"];
+}
