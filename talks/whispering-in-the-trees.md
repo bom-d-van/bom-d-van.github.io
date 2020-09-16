@@ -24,6 +24,16 @@ Graphite is a time-series database. It was originally written in python (mainly)
 
 ---
 
+# Graphite Metric Basics
+
+* An example of graphite metric: `sys.cpu.loadavg.app.host-0001`
+* An example of graphite retention policy and aggregation policy: `1s:2d,1m:30d,1h:2y avg`
+	* size of the retention example: (86400\*2 + 1440\*30 + 24\*730) \* 12 = 2,802,240 bytes (the first archive accounts for 74% of its final size)
+	* 1s:2d is called an archive (same for 1m:30d and 1h:2y)
+* A typical graphite data point: `1600027497: 42` (a 32 bit timestamp and a 64 bit value)
+
+---
+
 ![height:600px](architecture.png)
 
 credit: https://github.com/graphite-project/whisper
@@ -45,16 +55,6 @@ My story today is mainly about the storage program: go-carbon.
 # Just as an exploration
 
 I came upon our graphite go stack in a hackathon in 2018. Then later that year I learned about the Gorilla timeseries data compression algorithm. When I tried to figure out what compression algorithm graphite is using, I noticed that it's not compressing data. So I decided to give it a shot by introducing the algorithm to the system.
-
----
-
-# Graphite Metric Basics
-
-* An example of graphite metric: `sys.cpu.loadavg.app.host-0001`
-* An example of graphite retention policy and aggregation policy: `1s:2d,1m:30d,1h:2y avg`
-	* size of the retention example: (86400\*2 + 1440\*30 + 24\*730) \* 12 = 2,802,240 bytes (the first archive accounts for 74% of its final size)
-	* 1s:2d is called an archive (same for 1m:30d and 1h:2y)
-* A typical graphite data point: `1600027497: 42` (a 32 bit timestamp and a 64 bit value)
 
 ---
 
