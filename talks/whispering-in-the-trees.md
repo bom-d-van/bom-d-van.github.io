@@ -250,7 +250,7 @@ note: for ooo and rewrite support, most of the timeseries database shares the sa
 
 ---
 
-# Retro
+# Thoughts
 
 * Special thanks to [Alexey Zhiltsov](https://github.com/azhiltsov) (best sysadmin) and our Graphite team
 * Study a problem well and applying well-researched algorithms onto existing system could yield nice result
