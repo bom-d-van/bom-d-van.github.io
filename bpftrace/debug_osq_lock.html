@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Debugging kernel cpu time with luck, unwinding perl stack with bpftrace</title>
+<style type="text/css">
+body {
+    color:rgb(51, 51, 51);
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+}
+</style>
+</head>
+<body>
 <h1 id="debugging-kernel-cpu-time-with-luck-unwinding-perl-stack-with-bpftrace">Debugging kernel cpu time with luck, unwinding perl stack with bpftrace</h1>
 <p>(originally posted within the company at AUGUST 20, 2020, this is an edited version.)</p>
 <ul>
@@ -121,3 +135,5 @@ END { clear(@module); clear(@sub); clear(@line); }</code></pre>
 <li>stacks are maintained by a simple bpf map indexed by a simple depth counter, we can’t join strings easily in bpftrace at the moment (I hate the 512 bytes of stack limit), so we need to save modules and subs in two different maps.</li>
 </ul>
 <p>With this script, it reliably tells us which perl function is triggering the kernel lock, now when a similar situation/issue presents itself, we have more control.</p>
+</body>
+</html>

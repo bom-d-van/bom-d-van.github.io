@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Some bpftrace scripts using perldtrace</title>
+<style type="text/css">
+body {
+    color:rgb(51, 51, 51);
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+}
+</style>
+</head>
+<body>
 <h1 id="some-bpftrace-scripts-using-perldtrace">Some bpftrace scripts using perldtrace</h1>
 <p>These are a collection of bpftrace scritpts using <a href="https://perldoc.perl.org/perldtrace.html">perldtrace</a>, used in the context running perl app using uwsgi.</p>
 <h2 id="common-pitfallscaveats">Common pitfalls/caveats</h2>
@@ -248,3 +262,5 @@ uprobe:/usr/lib64/libperl.so:psgi_response {
 <p>Some simple commands to install bpftrace:</p>
 <p>Note: make sure that your kernel is &gt;= 4.19. Things doesn’t work as smooth for lower kernel versions.</p>
 <pre><code>sudo yum install bpftrace &quot;kernel-devel-uname-r == $(uname -r)&quot;</code></pre>
+</body>
+</html>
