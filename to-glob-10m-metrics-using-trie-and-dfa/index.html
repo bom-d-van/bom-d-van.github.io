@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)</title>
+<style type="text/css">
+body {
+    color:rgb(51, 51, 51);
+    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+}
+</style>
+</head>
+<body>
 <p><a href="/">Index</a></p>
 <h1 id="to-glob-10m-metrics-trie-dfa-tree-for-go-carbon-the-graphite-storage-node-daemon-">To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)</h1>
 <p>(originally written at October 9, 2019)</p>
@@ -68,3 +82,5 @@
 <pre><code>svc<span class="hljs-selector-class">.group</span>.*.*<span class="hljs-selector-class">.haproxy</span><span class="hljs-selector-class">.server</span>.*app-*_prod<span class="hljs-selector-class">.weight</span> (notice *bookadmin part)
 </code></pre><p>Solution to this issue is either take the hit as long as the slow down isn&#39;t too bad or rewrite the query to make it performant if possible (by removing the leading star with {}; for instance, the example query could be rewritten as: <code>`svc.group.*.*.haproxy.server.{,pre1,pre2}app-*_prod.weight</code>).</p>
 <p>Full pull request you are interested in all the details: <a href="https://github.com/lomik/go-carbon/pull/303/files">https://github.com/lomik/go-carbon/pull/303/files</a></p>
+</body>
+</html>
