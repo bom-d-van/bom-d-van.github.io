@@ -12,7 +12,8 @@
 // sys.cpu.loadavg.app.host-0001
 
 digraph trie {
-	label="sys.cpu.loadavg.app.host-0001";
+	// layout="neato"
+	label="sys.*";
 	rankdir=LR;
 	size="8,5"
 	node [shape = circle];
@@ -20,6 +21,12 @@ digraph trie {
 	root [label = "/"];
 	sys [label = "/"];
 	root -> sys [label = "sys"];
+
+	quota_root [shape=record label = "{ metrics: 1,000,000 }| { physical_size: 2,800,000,000 } | { throughput: 60,000,000 }"];
+	root -> quota_root [style=dotted]
+
+	quota_sys [shape=record label = "{ metrics: 100,000 }| { physical_size: 280,000,000 } | { throughput: 60,000,00 }"];
+	sys -> quota_sys [style=dotted]
 
 	cpu [label = "/"];
 	sys -> cpu [label = "cpu"];
@@ -30,7 +37,8 @@ digraph trie {
 	app [label = "/"];
 	loadavg -> app [label = "app"];
 
-	host_000 [label = "."];
+
+	host_000 [label = "." ];
 	app -> host_000 [label = "host_000"];
 
 	host_0001 [label = "$"];
@@ -44,4 +52,12 @@ digraph trie {
 
 	host_0004 [label = "$"];
 	host_000 -> host_0004 [label = "4"];
+
+	user [label = "/"];
+	root -> user [label = "user"];
+	user_rest [label="..."]
+	user -> user_rest [label = "..."]
+
+	quota_user [shape=record label = "{ metrics: 100,000 }| { physical_size: 280,000,000 } | { throughput: 60,000,00 }"];
+	user -> quota_user [style=dotted]
 }

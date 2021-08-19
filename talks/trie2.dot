@@ -12,7 +12,7 @@
 // sys.cpu.loadavg.app.host-0001
 
 digraph trie {
-	label="sys.cpu.loadavg.app.host-0001";
+	label="sys.*";
 	rankdir=LR;
 	size="8,5"
 	node [shape = circle];
@@ -44,4 +44,9 @@ digraph trie {
 
 	host_0004 [label = "$"];
 	host_000 -> host_0004 [label = "4"];
+
+	user [label = "/"];
+	root -> user [label = "user"];
+	user_rest [label="..."]
+	user -> user_rest [label = "..."]
 }
