@@ -12,6 +12,7 @@ Some random stuff from Xiaofan Hu [Twitter](https://twitter.com/bom_d_van), [Git
 * bpftrace (and perldtrace)
 	* [bpftrace+perldtrace usages](/bpftrace/perldtrace.html)
 	* [Debugging kernel cpu time with luck, unwinding perl stack with bpftrace](/bpftrace/debug_osq_lock.html)
+	* [Using bpftrace on Go programs](/bpftrace/go.html)
 
 * talks
 	* [Whispering in the trees](/talks/whispering-in-the-trees.pdf)

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="date" content=''>
+    <title>Using bpftrace on Go programs</title>
+
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <style type="text/css">
+        body {
+            color:rgb(51, 51, 51);
+            font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing:antialiased;
+            -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+        }
+    </style>
+  </head>
+  <body>
+    <!-- <p>Date: </p> -->
+<p><a href="https://www.xhu.buzz/">Index</a></p>
+<h1 id="using-bpftrace-on-go-programs">Using bpftrace on Go programs</h1>
+<p>This is a simple post about a few insights and tricks when using bpftrace to debug a Go program with uprobe.</p>
+<p>A simple bpftrace program targeting go program could look like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">bpftrace</span> <span class="at">-e</span> <span class="st">&#39;uprobe:$binary_path:$func_symbol_name {</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">    printf(&quot;%d\n&quot;, sarg0)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="st">}&#39;</span></span></code></pre></div>
+<p>There are two parts that we need to figure out when writing a bpftrace script for Go program:</p>
+<ol type="1">
+<li>Target symbol name</li>
+<li>Arguments order and its memory layout on the stack</li>
+</ol>
+<h2 id="target-symbol-name">Target symbol name</h2>
+<p>Unlike c programs, after compilation, a function or method name in a Go program could become somewhat complex like: <code>github.com/hashicorp/vault/vault.(*BarrierView).Put</code>.</p>
+<p>It could be tricky to write it all out. One trick is to use readelf or objdump to list the interested funcs or methods and just copy it:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> readelf <span class="at">-sW</span> /bin/vault <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-i</span> BarrierView</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">210267:</span> 0000000003be6c00   331 FUNC    GLOBAL DEFAULT    1 github.com/hashicorp/vault/vault.<span class="er">(</span><span class="ex">*BarrierView</span><span class="kw">)</span><span class="ex">.Put</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
+<h2 id="arguments-order-and-memory-layout">Arguments: order and memory layout</h2>
+<p>Arguments are passed over the stack, accessed by bpftraace keywords like: sarg0, sarg1, etc. (This might not be true for future version of Go as the language is also moving to a register-based calling convention, with this coming changes, we can use regular accessor like arg0.)</p>
+<p>Non-primitive types like string, struct, slice, and interface, if not pointer, is the same as passing as multiple arguments to the function or method. The number of the actual arguments depends on how many members with in a struct, sliceHeader, etc.</p>
+<p>Method is like function, but with the receiver as the first argument.</p>
+<p>Order of the arguments is started from left to right in the source code definition, and zero-indexed.</p>
+<p>uretprobe is currently not safe to use due to Go runtime dynamically resizes stack.</p>
+<h2 id="pseudo-code-example">Pseudo-code example</h2>
+<pre><code>type StringHeader struct {
+    Data uintptr
+    Len  int
+}
+
+func fooStr1(str string) { ... }
+func fooStr2(data *byte, len int) { ... }
+
+type SliceHeader struct {
+    Data uintptr
+    Len  int
+    Cap  int
+}
+
+func fooSlice1(slice []int) { ... }
+func fooSlice2(data *int, len, cap int) { ... }
+
+type interfaceHeader struct {
+    tab  uintptr
+    data uintptr
+}
+
+func fooInterface1(ctx context.Context) { ... }
+func fooInterface1(tab, data uintptr) { ... }</code></pre>
+<p>In the above pseudo-code, fooStr1 has the same function signatures as fooStr2, so do fooSlice1 and fooSlice2, fooInterface1 and fooInterface2.</p>
+<pre><code>type foo struct {
+  p1 int
+  p2 int
+}
+
+func fooPtr(f *foo, a1 int) (r1 int) { ... }
+func (f *foo) ptr(a1 int) (r1 int) { ... }
+
+func fooPlain(f foo, a1 int) (r1 int) { ... }
+func (f foo) plain(a1 int) (r1 int) { ... }</code></pre>
+<p>In the example above, after compilation, fooPtr has the same functional signature as foo.Ptr does. Same for fooPlain and foo.Plain.</p>
+<p>For the fooPlain and (f foo).plain above, the order of their arguments on the stack would looks like this:</p>
+<pre><code>// 0x40
+//      &lt;- r1
+// 0x38
+//      &lt;- a1     (sarg2)
+// 0x30
+//      &lt;- foo.p2 (sarg1)
+// 0x28
+//      &lt;- foo.p1 (sarg0)
+// 0x20</code></pre>
+<h2 id="real-world-example">Real world example</h2>
+<p>The function signatures and struct definitions bellow are taken from https://github.com/hashicorp/vault.</p>
+<pre><code>// func (v *BarrierView) Put(ctx context.Context, entry *logical.StorageEntry) error
+//
+// type StorageEntry struct {
+//  Key      string
+//  Value    []byte
+//  SealWrap bool
+// }
+
+The bpftrace script bellow would trace every function calls to BarriwerView.Put and prints out the arguments.
+sudo BPFTRACE_STRLEN=164 bpftrace -e &#39;
+    struct storage_entry {
+        char* key;
+        uint64_t klen;
+        char* value;
+        uint64_t vlen;
+        uint64_t vcap;
+    };
+
+    // sarg0 is *BarrierView
+    // sarg1,2 is context.Context
+    uprobe:/bin/vault:&quot;github.com/hashicorp/vault/vault.(*BarrierView).Put&quot; {
+        printf(
+            &quot;BarrierView.Put: %s\n&quot;,
+            str(
+                ((struct storage_entry*)sarg3)-&gt;key,
+                ((struct storage_entry*)sarg3)-&gt;klen
+            )
+        );
+    }
+
+    uprobe:/bin/vault:&quot;github.com/hashicorp/vault/vault.(*BarrierView).Put&quot; {
+        printf(
+            &quot;BarrierView.Put: %s\n&quot;,
+            str(
+                ((struct storage_entry*)sarg3)-&gt;value,
+                ((struct storage_entry*)sarg3)-&gt;vlen
+            )
+        );
+    }
+&#39;
+
+# example output
+#
+# BarrierView.Put: h8fcaf0c55276ff6024bcef153a5e1ed8fb6ae19694dd0c20da8f61d6edd4bc10
+# BarrierView.Put: {&quot;lease_id&quot;:&quot;auth/container/approle/login/xxx&quot;,&quot;client_token&quot;:&quot;xxx&quot;,&quot;token_typ
+# ...</code></pre>
+<p>References:</p>
+<ul>
+<li>https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md</li>
+<li>https://research.swtch.com/interfaces</li>
+</ul>
+  </body>
+</html>
