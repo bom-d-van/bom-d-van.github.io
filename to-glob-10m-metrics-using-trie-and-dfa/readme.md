@@ -1,6 +1,3 @@
-
-[Index](/)
-
 # To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)
 
 (originally written at October 9, 2019)
