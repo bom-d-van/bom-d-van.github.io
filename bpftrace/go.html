@@ -1,24 +1,33 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="date" content=''>
-    <title>Using bpftrace on Go programs</title>
 
-    <link rel="shortcut icon" href="favicon.ico" />
+<head>
+<meta charset="utf-8">
+<meta name="date" content=''>
+<title>Using bpftrace on Go programs</title>
+<link rel="shortcut icon" href="favicon.ico" />
 
-    <style type="text/css">
-        body {
-            color:rgb(51, 51, 51);
-            font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-            -webkit-font-smoothing:antialiased;
-            -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
-        }
-    </style>
-  </head>
-  <body>
-    <!-- <p>Date: </p> -->
-<p><a href="https://www.xhu.buzz/">Index</a></p>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+<!-- <style type="text/css">
+    body {
+        color:rgb(51, 51, 51);
+        font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing:antialiased;
+        -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+    }
+</style> -->
+</head>
+
+<body class="container" style="padding: 0 0 50px 0">
+<!-- <p>Date: </p> -->
+<header>
+<h1>
+    <a href="https://www.xhu.buzz/">xhu.buzz</a>
+</h1>
+</header>
+
+<!--  -->
 <h1 id="using-bpftrace-on-go-programs">Using bpftrace on Go programs</h1>
 <p>This is a simple post about a few insights and tricks when using bpftrace to debug a Go program with uprobe.</p>
 <p>A simple bpftrace program targeting go program could look like this:</p>
@@ -140,8 +149,9 @@ sudo BPFTRACE_STRLEN=164 bpftrace -e &#39;
 # ...</code></pre>
 <p>References:</p>
 <ul>
-<li>https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md</li>
-<li>https://research.swtch.com/interfaces</li>
+<li><a href="https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md">https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md</a></li>
+<li><a href="https://research.swtch.com/interfaces">https://research.swtch.com/interfaces</a></li>
 </ul>
-  </body>
+</body>
+
 </html>

@@ -1,18 +1,33 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
+<meta charset="utf-8">
+<meta name="date" content=''>
 <title>Some bpftrace scripts using perldtrace</title>
-<link rel="shortcut icon" href="../favicon.ico" />
-<style type="text/css">
-body {
-    color:rgb(51, 51, 51);
-    font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing:antialiased;
-    -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
-}
-</style>
+<link rel="shortcut icon" href="favicon.ico" />
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+<!-- <style type="text/css">
+    body {
+        color:rgb(51, 51, 51);
+        font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing:antialiased;
+        -webkit-tap-highlight-color:rgba(0, 0, 0, 0);
+    }
+</style> -->
 </head>
-<body>
+
+<body class="container" style="padding: 0 0 50px 0">
+<!-- <p>Date: </p> -->
+<header>
+<h1>
+    <a href="https://www.xhu.buzz/">xhu.buzz</a>
+</h1>
+</header>
+
+<!--  -->
 <h1 id="some-bpftrace-scripts-using-perldtrace">Some bpftrace scripts using perldtrace</h1>
 <p>These are a collection of bpftrace scritpts using <a href="https://perldoc.perl.org/perldtrace.html">perldtrace</a>, used in the context running perl app using uwsgi.</p>
 <h2 id="common-pitfallscaveats">Common pitfalls/caveats</h2>
@@ -29,52 +44,52 @@ body {
 </ul>
 <p>Scripts/Examples</p>
 <h2 id="track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process">Track the 30 most frequent sub routine calls in the current most active uwsgi process</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="va">pid=</span><span class="kw">`</span><span class="fu">ps</span> -eo pcpu,pid,cmd <span class="kw">|</span> <span class="fu">grep</span> uw[s]gi <span class="kw">|</span> <span class="fu">sort</span> -nr <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/^ \+//&#39;</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/ \+/ /&#39;</span> <span class="kw">|</span> <span class="fu">cut</span> -d <span class="st">&#39; &#39;</span> -f 2 <span class="kw">|</span> <span class="fu">head</span> -1<span class="kw">`</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="va">BPFTRACE_STRLEN=</span>256 <span class="fu">sudo</span> bpftrace -p <span class="va">$pid</span> -e <span class="st">&#39;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="st">usdt:/usr/lib64/libperl.so:sub__entry {</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="st">        @calls[pid, str(arg3), str(arg0)] = count();</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="st">}</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="st">interval:s:5 {</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="st">        printf(&quot;----&quot;); print(@calls, 30); clear(@calls);</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="st">}</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="st">&#39;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="ex">Get</span> wallclocks of a specific subroutine in the current most active uwsgi process</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="ex">Using</span> A::Perl::Package-<span class="op">&gt;</span>a_sub_routine as an example:</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="kw">function</span><span class="fu"> clean_up</span> <span class="kw">{</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>    <span class="bu">echo</span> <span class="st">&#39;exit: sudo pkill bpftrace&#39;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>    <span class="fu">sudo</span> pkill bpftrace</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>    <span class="bu">exit</span> 0</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="kw">}</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="bu">trap</span> clean_up INT TERM EXIT</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="kw">while</span> <span class="fu">true</span><span class="kw">;</span> <span class="kw">do</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a><span class="va">pid=</span><span class="kw">`</span><span class="fu">ps</span> -eo pcpu,pid,cmd <span class="kw">|</span> <span class="fu">grep</span> uw[s]gi <span class="kw">|</span> <span class="fu">sort</span> -nr <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/^ \+//&#39;</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/ \+/ /&#39;</span> <span class="kw">|</span> <span class="fu">cut</span> -d <span class="st">&#39; &#39;</span> -f 2 <span class="kw">|</span> <span class="fu">head</span> -1<span class="kw">`</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a><span class="bu">echo</span> <span class="st">&quot;tracing </span><span class="va">$pid</span><span class="st"> ---&quot;</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a><span class="fu">sudo</span> BPFTRACE_STRLEN=64 bpftrace -p <span class="va">$pid</span> -e <span class="st">&#39;</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a><span class="st">usdt:/usr/lib64/libperl.so:sub__entry {</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a><span class="st">        if (str(arg3) == &quot;A::Perl::Package&quot; &amp;&amp; str(arg0) == &quot;a_sub_routine&quot;) {</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a><span class="st">                @start = nsecs;</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a><span class="st">        }</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a><span class="st">}</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a><span class="st">usdt:/usr/lib64/libperl.so:sub__return {</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a><span class="st">        if (str(arg3) == &quot;A::Perl::Package&quot; &amp;&amp; str(arg0) == &quot;a_sub_routine&quot;) {</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a><span class="st">                printf(&quot;%d %s::%s %d\n&quot;, &#39;</span><span class="va">$pid</span><span class="st">&#39;, str(arg3), str(arg0), nsecs - @start);</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a><span class="st">                @start = 0;</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true"></a><span class="st">        }</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true"></a><span class="st">}</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true"></a><span class="st">&#39;</span></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true"></a></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true"></a><span class="fu">sleep</span> 2</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true"></a></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true"></a><span class="kw">done</span></span></code></pre></div>
+<pre><code>pid=`ps -eo pcpu,pid,cmd | grep uw[s]gi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
+
+BPFTRACE_STRLEN=256 sudo bpftrace -p $pid -e &#39;
+usdt:/usr/lib64/libperl.so:sub__entry {
+        @calls[pid, str(arg3), str(arg0)] = count();
+}
+
+interval:s:5 {
+        printf(&quot;----&quot;); print(@calls, 30); clear(@calls);
+}
+&#39;
+Get wallclocks of a specific subroutine in the current most active uwsgi process
+Using A::Perl::Package-&gt;a_sub_routine as an example:
+
+function clean_up {
+    echo &#39;exit: sudo pkill bpftrace&#39;
+    sudo pkill bpftrace
+    exit 0
+}
+
+trap clean_up INT TERM EXIT
+
+while true; do
+
+pid=`ps -eo pcpu,pid,cmd | grep uw[s]gi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
+
+echo &quot;tracing $pid ---&quot;
+
+sudo BPFTRACE_STRLEN=64 bpftrace -p $pid -e &#39;
+usdt:/usr/lib64/libperl.so:sub__entry {
+        if (str(arg3) == &quot;A::Perl::Package&quot; &amp;&amp; str(arg0) == &quot;a_sub_routine&quot;) {
+                @start = nsecs;
+        }
+}
+
+usdt:/usr/lib64/libperl.so:sub__return {
+        if (str(arg3) == &quot;A::Perl::Package&quot; &amp;&amp; str(arg0) == &quot;a_sub_routine&quot;) {
+                printf(&quot;%d %s::%s %d\n&quot;, &#39;$pid&#39;, str(arg3), str(arg0), nsecs - @start);
+                @start = 0;
+        }
+}
+&#39;
+
+sleep 2
+
+done</code></pre>
 <h2 id="get-wallclocks-of-all-subroutines-of-a-specific-modulepackage-in-the-current-most-active-uwsgi-process">Get wallclocks of all subroutines of a specific module/package in the current most active uwsgi process</h2>
 <p>Using DBI as a example:</p>
 <pre><code>function clean_up {
@@ -264,4 +279,5 @@ uprobe:/usr/lib64/libperl.so:psgi_response {
 <p>Note: make sure that your kernel is &gt;= 4.19. Things doesn’t work as smooth for lower kernel versions.</p>
 <pre><code>sudo yum install bpftrace &quot;kernel-devel-uname-r == $(uname -r)&quot;</code></pre>
 </body>
+
 </html>

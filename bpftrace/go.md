@@ -1,5 +1,3 @@
-[Index](https://www.xhu.buzz/)
-
 # Using bpftrace on Go programs
 
 This is a simple post about a few insights and tricks when using bpftrace to debug a Go program with uprobe.
@@ -157,5 +155,5 @@ sudo BPFTRACE_STRLEN=164 bpftrace -e '
 
 References:
 
-* https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md
-* https://research.swtch.com/interfaces
+* [https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md](https://github.com/iovisor/bpftrace/blob/master/docs/reference_guide.md)
+* [https://research.swtch.com/interfaces](https://research.swtch.com/interfaces)

@@ -16,6 +16,7 @@ Some random stuff from Xiaofan Hu [Twitter](https://twitter.com/bom_d_van), [Git
 
 * talks
 	* [Whispering in the trees](/talks/whispering-in-the-trees.pdf)
+	* [Go-Graphite (Go-Carbon) Quota](/talks/quota.pdf)
 
 * random
 	* [A Golang 3D Bin Packing Implementation](https://github.com/bom-d-van/binpacking)
