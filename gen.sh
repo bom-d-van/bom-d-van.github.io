@@ -5,6 +5,9 @@ pandoc --standalone --template template.html bpftrace/debug_osq_lock.md --metada
 pandoc --standalone --template template.html bpftrace/perldtrace.md --metadata title='Some bpftrace scripts using perldtrace' -o bpftrace/perldtrace.html
 pandoc --standalone --template template.html to-glob-10m-metrics-using-trie-and-dfa/readme.md --metadata title='To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)' -o to-glob-10m-metrics-using-trie-and-dfa/index.html
 
+pandoc --standalone --template template.html how-to-shrink-whisper-files/readme.md --metadata title='How to shrink whisper files for fun and profit' -o how-to-shrink-whisper-files/index.html
+sed -i '' 's/<table>/<table class="table">/' how-to-shrink-whisper-files/index.html
+
 pandoc --standalone --template template_index.html readme.md --metadata title="Xiaofan Hu's blogs" -o index.html
 
 # from markdown t o pdf/slides
