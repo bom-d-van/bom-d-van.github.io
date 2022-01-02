@@ -2,9 +2,11 @@
 
 (originally written at October 9, 2019)
 
+Table of Contents
+
 TLDR: By combining Trie and DFA for indexing metric paths, letting two trees walking over each other, this new implementation halves the memory usage of go-carbon process (avg 57% less, from 20.5G to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5 of it with trigram index on go-carbon. This is making us a one step closer to having wholly cwhisper-powered clusters!
 
-## Short context
+## [Short context](#short-context)
 
 Metrics are saved as files on go-carbon (one file per metric), the graphite storage daemon.
 
@@ -12,7 +14,7 @@ When we make a query to Graphite, like general.tuning.minutely.sys_stats.{extran
 
 So we develop this new algorithm by using trie and dfa that has shown good potential in our tests.
 
-## Live test
+## [Live test](#live-test)
 
 Tested on a cwhisper cluster replica, with 9 servers in total
 
@@ -24,7 +26,7 @@ Displaying data bellow with histogram to show the advantage of the new implement
 
 ![](images/image4.jpg)
 
-## Non-Live Test
+## [Non-Live Test](#non-live-test)
 
 With queries and metric names collected from production, displaying data bellow with histogram to show the advantage of the new implementation:
 
@@ -32,7 +34,7 @@ With queries and metric names collected from production, displaying data bellow 
 
 From the non-live test, we could see that trigram index is able to finish 57% of the queries under 100us, but  has a longer tail, comparing to Trie+DFA.
 
-## The problem (more details)
+## [The problem (more details)](#the-problem-more-details)
 
 In our previous test of cwhisper (a compressed version of file format for storing Graphite metrics) on one of our graphite clusters, Alexey Zhiltsov noticed that 99th percentile of request time on cwhisper nodes (5M - 6M metrics per node) were worse than whisper clusters, because of  higher number of metrics served per box. And cwhisper makes it feasible for us to serve 10M metrics per box. So speeding up the request would make cwhisper deployment even more attractive.
 
@@ -43,11 +45,11 @@ Then we started a discussion from which I learnt about some of the drawbacks of 
 
 Therefore, I started an attempt to try out some "new" ideas, which ended up leading me to the new implementation of combining trie and DFA.
 
-## How trigram index works
+## [How trigram index works](#how-trigram-index-works)
 
 This index is implemented by ex-Bookinger Damian Gryski, to make an unfairly simple explanation (because it’s a post about the new index ;) ): it works by generating trigrams from a metric path and then using them to build an inverted index (trigrams -> metric paths). When querying is sent to go-carbon, it would also generate trigrams based on the queries, and  then intersect both sets of trigrams to filter out metrics.
 
-## How trie+dfa index works
+## [How trie+dfa index works](#how-trie-dfa-index-works)
 
 A "very inaccurate" description of the algorithm (reading source code is better):
 
@@ -81,7 +83,7 @@ A Trie sample with a DFA stack annotation:
 
 ![](images/image1.png)
 
-## Pros
+## [Pros](#pros)
 
 * Less memory usage and faster index time
 * Better "empirical" performance
@@ -90,7 +92,7 @@ A Trie sample with a DFA stack annotation:
 * More globbing syntax could be extended relatively easier
 * No filesystem globbing fallback
 
-## Cons
+## [Cons](#cons)
 
 * Some queries with leading star in queries might be slowed down (from milliseconds to seconds), example:
 
