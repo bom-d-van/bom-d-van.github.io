@@ -33,16 +33,27 @@
 <!--  -->
 <h1 id="how-to-shrink-whisper-files-for-fun-and-profit">How to shrink whisper files for fun and profit</h1>
 <p>(originally written at June 17, 2019)</p>
+<p>Table of Contents</p>
+<ul>
+<li><a href="#what_is_a_whisper_file">What is a whisper file?</a></li>
+<li><a href="#the_gorilla_algorithm">The Gorilla algorithm</a></li>
+<li><a href="#whisper_compression_c_whisper">Whisper + Compression = CWhisper</a>
+<ul>
+<li><a href="#why_introduce_blocks">Why introduce blocks?</a></li>
+</ul></li>
+<li><a href="#tradeoff">Tradeoff</a></li>
+<li><a href="#test_result_on_production">Test result on production</a></li>
+</ul>
 <p>The problem we’re trying to solve is making whisper files smaller. The profit we’ll get from doing this is increased storage capacity of our graphite clusters.</p>
 <p>To achieve this, a new file format needs to be designed and implemented from scratch - writing bits rather than bytes to files.</p>
 <p>The fun part? End results are very rewarding. Not only is disk space reduced by ~60% - ~55% (seen in different testing environments and with different XFS configurations), but server utilities are greatly increased as well (see production test below).</p>
-<h2 id="what-is-a-whisper-file">What is a whisper file?</h2>
+<h2 id="what-is-a-whisper-file"><a href="#what_is_a_whisper_file">What is a whisper file?</a></h2>
 <p><a href="https://graphite.readthedocs.io/en/latest/whisper.html">Whisper</a> is a <a href="https://www.aosabook.org/en/graphite.html">fixed-size database</a>, similar in design and purpose to RRD (round-robin-database). It provides fast, reliable storage of numeric data over time. Whisper allows higher-resolution (seconds per point) recent data to degrade into lower resolutions, for long-term retention of historical data.</p>
-<h2 id="the-gorilla-algorithm">The Gorilla algorithm</h2>
+<h2 id="the-gorilla-algorithm"><a href="#the_gorilla_algorithm">The Gorilla algorithm</a></h2>
 <p>Facebook’s paper <a href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Gorilla: A Fast, Scalable, In-Memory Time Series Database</a>, introduced an algorithm for efficiently compressing time-series data. According to this paper, time-series data could be saved in 1.37 bytes per data point according, which when uncompressed is 16 bytes long in size (or 12 bytes if the timestamp is saved in 32 bits, like whisper. And yes, one more thing to fix before 2038).</p>
 <p>Since its publication, this algorithm has been adopted by Prometheus, M3, and many other notable time-series databases. This makes it easier to adopt.</p>
 <p><img src="images/image2.png" /></p>
-<h2 id="whisper-compression-cwhisper">Whisper + Compression = CWhisper</h2>
+<h2 id="whisper-compression-cwhisper"><a href="#whisper_compression_c_whisper">Whisper + Compression = CWhisper</a></h2>
 <p>Main format changes:</p>
 <ul>
 <li>Data is divided into blocks within the same archive</li>
@@ -55,21 +66,21 @@
 <p><img src="images/image1.png" /></p>
 <p>Compressed whisper file format (detailed example):</p>
 <p><img src="images/image3.png" /></p>
-<h3 id="why-introduce-blocks">Why introduce blocks?</h3>
+<h3 id="why-introduce-blocks"><a href="#why_introduce_blocks">Why introduce blocks?</a></h3>
 <p>The way the decompression algorithms work is by starting from the first data point. In order to read the 100th data point, all 99 data points before it need to be decompressed.</p>
 <p>Therefore:</p>
 <ul>
 <li>Faster read (no need to decompress unnecessary data points)</li>
 <li>More resistant to disk corruptions (failures could be contained by block boundary)</li>
 </ul>
-<h2 id="tradeoff">Tradeoff</h2>
+<h2 id="tradeoff"><a href="#tradeoff">Tradeoff</a></h2>
 <p>So what’s the trade off we are making here in order to shrink files?</p>
 <ul>
 <li>Timestamps have to be increasing only</li>
 <li>Unlike standard format, old data points can’t be easily rewritten by changing the timestamp in write requests because it’s no longer data point addressable</li>
 <li>Data points are assumed as 2 bytes long at metric creation in CWhisper. But over time, if 2 bytes are not enough for the specified retention policy, then resizing is required and will be done automatically</li>
 </ul>
-<h2 id="test-result-on-production">Test result on production</h2>
+<h2 id="test-result-on-production"><a href="#test_result_on_production">Test result on production</a></h2>
 <p>The test result on one of our clusters is good and conclusive. It outperforms the classic whisper format on almost all grounds like disk space usage, cpu usage and memory usage - and even shorter time-to-disk if we compare servers hosting the same number of metrics:</p>
 <table class="table">
 <thead>

@@ -2,17 +2,26 @@
 
 (originally written at June 17, 2019)
 
+Table of Contents
+
+* [What is a whisper file?](#what_is_a_whisper_file)
+* [The Gorilla algorithm](#the_gorilla_algorithm)
+* [Whisper + Compression = CWhisper](#whisper_compression_c_whisper)
+  * [Why introduce blocks?](#why_introduce_blocks)
+* [Tradeoff](#tradeoff)
+* [Test result on production](#test_result_on_production)
+
 The problem we’re trying to solve is making whisper files smaller. The profit we’ll get from doing this is increased storage capacity of our graphite clusters.
 
 To achieve this, a new file format needs to be designed and implemented from scratch - writing bits rather than bytes to files.
 
 The fun part? End results are very rewarding. Not only is disk space reduced by ~60% - ~55% (seen in different testing environments and with different XFS configurations), but server utilities are greatly increased as well (see production test below).
 
-## What is a whisper file?
+## [What is a whisper file?](#what_is_a_whisper_file)
 
 [Whisper](https://graphite.readthedocs.io/en/latest/whisper.html) is a [fixed-size database](https://www.aosabook.org/en/graphite.html), similar in design and purpose to RRD (round-robin-database). It provides fast, reliable storage of numeric data over time. Whisper allows higher-resolution (seconds per point) recent data to degrade into lower resolutions, for long-term retention of historical data.
 
-## The Gorilla algorithm
+## [The Gorilla algorithm](#the_gorilla_algorithm)
 
 Facebook's paper [Gorilla: A Fast, Scalable, In-Memory Time Series Database](https://www.vldb.org/pvldb/vol8/p1816-teller.pdf), introduced an algorithm for efficiently compressing time-series data. According to this paper, time-series data could be saved in 1.37 bytes per data point according, which when uncompressed is 16 bytes long in size (or 12 bytes if the timestamp is saved in 32 bits, like whisper. And yes, one more thing to fix before 2038).
 
@@ -20,7 +29,7 @@ Since its publication, this algorithm has been adopted by Prometheus, M3, and ma
 
 ![](images/image2.png)
 
-## Whisper + Compression = CWhisper
+## [Whisper + Compression = CWhisper](#whisper_compression_c_whisper)
 
 Main format changes:
 
@@ -39,7 +48,7 @@ Compressed whisper file format (detailed example):
 
 ![](images/image3.png)
 
-### Why introduce blocks?
+### [Why introduce blocks?](#why_introduce_blocks)
 
 The way the decompression algorithms work is by starting from the first data point. In order to read the 100th data point, all 99 data points before it need to be decompressed.
 
@@ -48,7 +57,7 @@ Therefore:
 * Faster read (no need to decompress unnecessary data points)
 * More resistant to disk corruptions (failures could be contained by block boundary)
 
-## Tradeoff
+## [Tradeoff](#tradeoff)
 
 So what's the trade off we are making here in order to shrink files?
 
@@ -56,7 +65,7 @@ So what's the trade off we are making here in order to shrink files?
 * Unlike standard format, old data points can't be easily rewritten by changing the timestamp in write requests because it's no longer data point addressable
 * Data points are assumed as 2 bytes long at metric creation in CWhisper. But over time, if 2 bytes are not enough for the specified retention policy, then resizing is required and will be done automatically
 
-## Test result on production
+## [Test result on production](#test_result_on_production)
 
 The test result on one of our clusters is good and conclusive. It outperforms the classic whisper format on almost all grounds like disk space usage, cpu usage and memory usage - and even shorter time-to-disk if we compare servers hosting the same number of metrics:
 

@@ -34,7 +34,7 @@
 <h1 id="using-bpftrace-on-go-programs">Using bpftrace on Go programs</h1>
 <p>This is a simple post about a few insights and tricks when using bpftrace to debug a Go program with uprobe.</p>
 <p>A simple bpftrace program targeting go program could look like this:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">bpftrace</span> <span class="at">-e</span> <span class="st">&#39;uprobe:$binary_path:$func_symbol_name {</span></span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">bpftrace</span> -e <span class="st">&#39;uprobe:$binary_path:$func_symbol_name {</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="st">    printf(&quot;%d\n&quot;, sarg0)</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="st">}&#39;</span></span></code></pre></div>
 <p>There are two parts that we need to figure out when writing a bpftrace script for Go program:</p>
@@ -45,9 +45,9 @@
 <h2 id="target-symbol-name">Target symbol name</h2>
 <p>Unlike c programs, after compilation, a function or method name in a Go program could become somewhat complex like: <code>github.com/hashicorp/vault/vault.(*BarrierView).Put</code>.</p>
 <p>It could be tricky to write it all out. One trick is to use readelf or objdump to list the interested funcs or methods and just copy it:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> readelf <span class="at">-sW</span> /bin/vault <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-i</span> BarrierView</span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>$ <span class="ex">readelf</span> -sW /bin/vault <span class="kw">|</span> <span class="fu">grep</span> -i BarrierView</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">210267:</span> 0000000003be6c00   331 FUNC    GLOBAL DEFAULT    1 github.com/hashicorp/vault/vault.<span class="er">(</span><span class="ex">*BarrierView</span><span class="kw">)</span><span class="ex">.Put</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">210267</span>: 0000000003be6c00   331 FUNC    GLOBAL DEFAULT    1 github.com/hashicorp/vault/vault.(*BarrierView)<span class="ex">.Put</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
 <h2 id="arguments-order-and-memory-layout">Arguments: order and memory layout</h2>
 <p>Arguments are passed over the stack, accessed by bpftraace keywords like: sarg0, sarg1, etc. (This might not be true for future version of Go as the language is also moving to a register-based calling convention, with this coming changes, we can use regular accessor like arg0.)</p>
