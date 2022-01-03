@@ -42,12 +42,12 @@
 <li><a href="unwinding-perl-stack-with-bpftrace-without-luck">Unwinding perl stack with bpftrace without luck</a></li>
 </ul>
 <p>Recently we are getting some capacity issues for our session system, so I started taking a closer look on it. One thing that caught my eyes quickly was that there were some high system cpu time on the servers, especially noticeable when it’s under heavy load. So I started looking at the cause.</p>
-<h2 id="sudo-perf-top"><a href="sudo-perf-top">sudo perf top</a></h2>
+<h2 id="sudo-perf-top"><a href="#sudo-perf-top">sudo perf top</a></h2>
 <figure>
 <img src="perf-top-edited.png" alt="osq_lock" /><figcaption aria-hidden="true">osq_lock</figcaption>
 </figure>
 <p>So it’s fairly straightforward that osq_lock was a lock and there was contention on it. We had our first clue.</p>
-<h2 id="bpftrace-kstack-and-ustack"><a href="bpftrace-kstack-and-ustack">bpftrace kstack and ustack</a></h2>
+<h2 id="bpftrace-kstack-and-ustack"><a href="#bpftrace-kstack-and-ustack">bpftrace kstack and ustack</a></h2>
 <p>Next, I wanted to see what’s the kernel and userspace stack looks like, bpftrace is one way to go (yes, I was constantly look for chances to enhance my bpftrace skills):</p>
 <pre><code>sudo bpftrace -e &#39;
 kprobe:osq_lock {
@@ -65,7 +65,7 @@ interval:s:3 {
 </figure>
 <p>So from the kstack, we could see that it’s related to reading cgroup memory stats. Unfortunately, sometimes ustack in bpftrace doesn’t work well. I did’t know how the read in userspace is triggered. However, the read function call is still a lead. So I turned to gdb.</p>
 <p>(<code>sudo perf top -g</code> can also do the job here though.)</p>
-<h2 id="pstack-gdb"><a href="pstack-gdb">pstack (gdb)</a></h2>
+<h2 id="pstack-gdb"><a href="#pstack-gdb">pstack (gdb)</a></h2>
 <p>This was somewhat a brutal step, I simply looped over all the uwsgi processes and run pstack over them one by one. And based on the <code>read</code> func that I got in last step, this is what I found. (However, this was mostly a blind guess that I’m making, and this was my first luck)</p>
 <pre><code>#0  0x00007f5a5444c75d in read () from /lib64/libpthread.so.0
 #1  0x00007f5a5090d13f in PerlIOUnix_read () from /usr/lib64/libperl.so
@@ -89,7 +89,7 @@ interval:s:3 {
 #19 0x000000000041674e in main ()</code></pre>
 <p>uwsgi_perl_after_request was a good lead here, it tells us that it’s something that’s happening after a request was processed.</p>
 <p>Still, this information only told me that it’s some perl codes that was triggering the syscall that leaded to lock contention. I needed to figure out what is perl code.</p>
-<h2 id="luck"><a href="luck">Luck</a></h2>
+<h2 id="luck"><a href="#luck">Luck</a></h2>
 <p>With all these information, I already had a vague idea of what might be going on. However, I didn’t know good enough about the code that might be triggering the issue, which meant that I didn’t have a good keyword to search it. And it’s tricky to obtain perl stacks on production. One way to do it is to inject perl script with gdb, but it requires intercepting the perl process and injecting some perl codes, what’s more, only triggers the perl stacktrace dump when osq_lock is hit, which is in kernel, and it isn’t trivial.</p>
 <p>bpftrace does allow us to run a script when osq_lock is triggered, however, there is no simple way to acquire perl stacktrace that I know of.</p>
 <p>In <a href="/bpftrace/perldtrace.html">my last post</a>, I was talking about using bpftrace and perldtrace, But at that point in time, I hadn’t figured a way to unwind perl stack triggered by a kernel func. But I got lucky by using a shitty bpftrace script that gave me the promising keywords and then we were able to make a fix.</p>
@@ -107,7 +107,7 @@ kprobe:osq_lock {
 <figure>
 <img src="system_cpu_edited.png" alt="system_cpu_edited.png" /><figcaption aria-hidden="true">system_cpu_edited.png</figcaption>
 </figure>
-<h2 id="unwinding-perl-stack-with-bpftrace-without-luck"><a href="unwinding-perl-stack-with-bpftrace-without-luck">Unwinding perl stack with bpftrace without luck</a></h2>
+<h2 id="unwinding-perl-stack-with-bpftrace-without-luck"><a href="#unwinding-perl-stack-with-bpftrace-without-luck">Unwinding perl stack with bpftrace without luck</a></h2>
 <p>Even though our problem of the kernel lock is resolved, I don’t like counting on luck for finding the root cause. So with some tinkering, I managed to work out a script and it’s able to reliably unwinding perl stack when a osq_lock is triggered. And it looks like this:</p>
 <pre><code>pid=`ps -eo pcpu,pid,cmd | grep uwsgi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
 
