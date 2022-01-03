@@ -2,6 +2,15 @@
 
 Table of Contents
 
+* [Common pitfalls/caveats](common-pitfalls-caveats)
+* [Track the 30 most frequent sub routine calls in the current most active uwsgi process](track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process)
+* [Get wallclocks of all subroutines of a specific module/package in the current most active uwsgi process](get-wallclocks-of-all-subroutines-of-a-specific-module-package-in-the-current-most-active-uwsgi-process)
+* [uwsgi restart: packages wallclocks](uwsgi-restart-packages-wallclocks)
+* [uwsgi restart: subroutine wallclocks](uwsgi-restart-subroutine-wallclocks)
+* [Unwind perl stacktrace on kernel events](unwind-perl-stacktrace-on-kernel-events)
+* [Using uwsgi_request on new request](using-uwsgi-request-on-new-request)
+* [Enabling perldtrace](enabling-perldtrace)
+
 These are a collection of bpftrace scritpts using [perldtrace](https://perldoc.perl.org/perldtrace.html), used in the context running perl app using uwsgi.
 
 ## [Common pitfalls/caveats](common-pitfalls-caveats)
