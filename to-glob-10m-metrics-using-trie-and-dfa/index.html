@@ -33,12 +33,23 @@
 <!--  -->
 <h1 id="to-glob-10m-metrics-trie-dfa-tree²-for-go-carbon-the-graphite-storage-node-daemon">To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)</h1>
 <p>(originally written at October 9, 2019)</p>
+<p>Table of Contents</p>
+<ul>
+<li><a href="#short-context">Short context</a></li>
+<li><a href="#live-test">Live test</a></li>
+<li><a href="#non-live-test">Non-Live Test</a></li>
+<li><a href="#the-problem-more-details">The problem (more details)</a></li>
+<li><a href="#how-trigram-index-works">How trigram index works</a></li>
+<li><a href="#how-trie-dfa-index-works">How trie+dfa index works</a></li>
+<li><a href="#pros">Pros</a></li>
+<li><a href="#cons">Cons</a></li>
+</ul>
 <p>TLDR: By combining Trie and DFA for indexing metric paths, letting two trees walking over each other, this new implementation halves the memory usage of go-carbon process (avg 57% less, from 20.5G to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5 of it with trigram index on go-carbon. This is making us a one step closer to having wholly cwhisper-powered clusters!</p>
-<h2 id="short-context">Short context</h2>
+<h2 id="short-context"><a href="#short-context">Short context</a></h2>
 <p>Metrics are saved as files on go-carbon (one file per metric), the graphite storage daemon.</p>
 <p>When we make a query to Graphite, like general.tuning.minutely.sys_stats.{extranet,xydapi}.host.prod.<em>.</em>.stat.cpu.all.idle.mean, before go-carbon fetches data from file, go-carbon needs to figure out what files to read from. Using filepath.Glob (a golang stdlib function for globbing files) is getting expensive when you have millions of metrics (too many syscall). The current go-carbon is using trigram indexing with filepath.Glob as fallback for fetching, which also has performance issues when metrics number rise above 10 millions.</p>
 <p>So we develop this new algorithm by using trie and dfa that has shown good potential in our tests.</p>
-<h2 id="live-test">Live test</h2>
+<h2 id="live-test"><a href="#live-test">Live test</a></h2>
 <p>Tested on a cwhisper cluster replica, with 9 servers in total</p>
 <ul>
 <li>Metrics count per node is ~3M</li>
@@ -47,11 +58,11 @@
 </ul>
 <p>Displaying data bellow with histogram to show the advantage of the new implementation (With trie+dfa, most of the 99th percentile request time is under 50ms (it’s a histogram with x-axis being 99th request time in millisecond):</p>
 <p><img src="images/image4.jpg" /></p>
-<h2 id="non-live-test">Non-Live Test</h2>
+<h2 id="non-live-test"><a href="#non-live-test">Non-Live Test</a></h2>
 <p>With queries and metric names collected from production, displaying data bellow with histogram to show the advantage of the new implementation:</p>
 <p><img src="images/image3.jpg" /></p>
 <p>From the non-live test, we could see that trigram index is able to finish 57% of the queries under 100us, but has a longer tail, comparing to Trie+DFA.</p>
-<h2 id="the-problem-more-details">The problem (more details)</h2>
+<h2 id="the-problem-more-details"><a href="#the-problem-more-details">The problem (more details)</a></h2>
 <p>In our previous test of cwhisper (a compressed version of file format for storing Graphite metrics) on one of our graphite clusters, Alexey Zhiltsov noticed that 99th percentile of request time on cwhisper nodes (5M - 6M metrics per node) were worse than whisper clusters, because of higher number of metrics served per box. And cwhisper makes it feasible for us to serve 10M metrics per box. So speeding up the request would make cwhisper deployment even more attractive.</p>
 <p>Then we started a discussion from which I learnt about some of the drawbacks of the current indexing implementation trigram:</p>
 <ul>
@@ -59,9 +70,9 @@
 <li>https://github.com/lomik/go-carbon/issues/301</li>
 </ul>
 <p>Therefore, I started an attempt to try out some “new” ideas, which ended up leading me to the new implementation of combining trie and DFA.</p>
-<h2 id="how-trigram-index-works">How trigram index works</h2>
+<h2 id="how-trigram-index-works"><a href="#how-trigram-index-works">How trigram index works</a></h2>
 <p>This index is implemented by ex-Bookinger Damian Gryski, to make an unfairly simple explanation (because it’s a post about the new index ;) ): it works by generating trigrams from a metric path and then using them to build an inverted index (trigrams -&gt; metric paths). When querying is sent to go-carbon, it would also generate trigrams based on the queries, and then intersect both sets of trigrams to filter out metrics.</p>
-<h2 id="how-triedfa-index-works">How trie+dfa index works</h2>
+<h2 id="how-triedfa-index-works"><a href="#how-trie-dfa-index-works">How trie+dfa index works</a></h2>
 <p>A “very inaccurate” description of the algorithm (reading source code is better):</p>
 <pre><code>1. Metric paths saved on go-carbon are indexed using compact trie (key for space efficiency)
 2. Queries are broken down into multiple NFA by &quot;.&quot; (e.g.: abc.efg*.xyz -&gt; abc$, efg*$, xyz$)
@@ -84,7 +95,7 @@
 <p><img src="images/image5.png" /></p>
 <p>A Trie sample with a DFA stack annotation:</p>
 <p><img src="images/image1.png" /></p>
-<h2 id="pros">Pros</h2>
+<h2 id="pros"><a href="#pros">Pros</a></h2>
 <ul>
 <li>Less memory usage and faster index time</li>
 <li>Better “empirical” performance</li>
@@ -93,7 +104,7 @@
 <li>More globbing syntax could be extended relatively easier</li>
 <li>No filesystem globbing fallback</li>
 </ul>
-<h2 id="cons">Cons</h2>
+<h2 id="cons"><a href="#cons">Cons</a></h2>
 <ul>
 <li>Some queries with leading star in queries might be slowed down (from milliseconds to seconds), example:</li>
 </ul>
