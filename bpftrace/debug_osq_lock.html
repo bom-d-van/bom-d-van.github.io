@@ -35,11 +35,11 @@
 <p>(originally posted within the company at AUGUST 20, 2020, this is an edited version.)</p>
 <p>Table of Contents</p>
 <ul>
-<li><a href="sudo-perf-top">sudo perf top</a></li>
-<li><a href="bpftrace-kstack-and-ustack">bpftrace kstack and ustack</a></li>
-<li><a href="pstack-gdb">pstack (gdb)</a></li>
-<li><a href="luck">Luck</a></li>
-<li><a href="unwinding-perl-stack-with-bpftrace-without-luck">Unwinding perl stack with bpftrace without luck</a></li>
+<li><a href="#sudo-perf-top">sudo perf top</a></li>
+<li><a href="#bpftrace-kstack-and-ustack">bpftrace kstack and ustack</a></li>
+<li><a href="#pstack-gdb">pstack (gdb)</a></li>
+<li><a href="#luck">Luck</a></li>
+<li><a href="#unwinding-perl-stack-with-bpftrace-without-luck">Unwinding perl stack with bpftrace without luck</a></li>
 </ul>
 <p>Recently we are getting some capacity issues for our session system, so I started taking a closer look on it. One thing that caught my eyes quickly was that there were some high system cpu time on the servers, especially noticeable when it’s under heavy load. So I started looking at the cause.</p>
 <h2 id="sudo-perf-top"><a href="#sudo-perf-top">sudo perf top</a></h2>
