@@ -1,8 +1,10 @@
 # Some bpftrace scripts using perldtrace
 
+Table of Contents
+
 These are a collection of bpftrace scritpts using [perldtrace](https://perldoc.perl.org/perldtrace.html), used in the context running perl app using uwsgi.
 
-## Common pitfalls/caveats
+## [Common pitfalls/caveats](common-pitfalls-caveats)
 
 * Lost event and BPFTRACE_STRLEN
 * The need of a pid and uwsgi multi-processes
@@ -14,7 +16,7 @@ These are a collection of bpftrace scritpts using [perldtrace](https://perldoc.p
 
 Scripts/Examples
 
-## Track the 30 most frequent sub routine calls in the current most active uwsgi process
+## [Track the 30 most frequent sub routine calls in the current most active uwsgi process](track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process)
 
 ```
 pid=`ps -eo pcpu,pid,cmd | grep uw[s]gi | sort -nr | sed 's/^ \+//' | sed 's/ \+/ /' | cut -d ' ' -f 2 | head -1`
@@ -65,7 +67,7 @@ sleep 2
 done
 ```
 
-## Get wallclocks of all subroutines of a specific module/package in the current most active uwsgi process
+## [Get wallclocks of all subroutines of a specific module/package in the current most active uwsgi process](get-wallclocks-of-all-subroutines-of-a-specific-module-package-in-the-current-most-active-uwsgi-process)
 
 Using DBI as a example:
 
@@ -113,7 +115,7 @@ sleep 2
 done
 ```
 
-## uwsgi restart: packages wallclocks
+## [uwsgi restart: packages wallclocks](uwsgi-restart-packages-wallclocks)
 
 ```
 function clean_up {
@@ -161,7 +163,7 @@ END { clear(@start_ts); print(@latencies); clear(@latencies); }
 done
 ```
 
-## uwsgi restart: subroutine wallclocks
+## [uwsgi restart: subroutine wallclocks](uwsgi-restart-subroutine-wallclocks)
 
 ```
 function clean_up {
@@ -204,7 +206,7 @@ sleep 2
 done
 ```
 
-## Unwind perl stacktrace on kernel events
+## [Unwind perl stacktrace on kernel events](unwind-perl-stacktrace-on-kernel-events)
 
 
 osq_lock as example:
@@ -256,7 +258,7 @@ END { clear(@module); clear(@sub); clear(@line); }
 '
 ```
 
-## Using uwsgi_request on new request
+## [Using uwsgi_request on new request](using-uwsgi-request-on-new-request)
 
 ```
 sudo bpftrace -e '
@@ -273,7 +275,7 @@ uprobe:/usr/lib64/libperl.so:psgi_response {
 ' -v
 ```
 
-## Enabling perldtrace
+## [Enabling perldtrace](enabling-perldtrace)
 
 Some simple commands to install bpftrace:
 

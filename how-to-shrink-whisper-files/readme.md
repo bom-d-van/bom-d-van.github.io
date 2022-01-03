@@ -7,7 +7,7 @@ Table of Contents
 * [What is a whisper file?](#what-is-a-whisper-file)
 * [The Gorilla algorithm](#the-gorilla-algorithm)
 * [Whisper + Compression = CWhisper](#whisper-compression-c-whisper)
-  * [Why introduce blocks?](#why-introduce-blocks)
+    * [Why introduce blocks?](#why-introduce-blocks)
 * [Tradeoff](#tradeoff)
 * [Test result on production](#test-result-on-production)
 

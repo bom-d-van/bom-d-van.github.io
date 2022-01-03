@@ -1,5 +1,12 @@
 # Using bpftrace on Go programs
 
+Table of Contents
+
+* [Target symbol name](target-symbol-name)
+* [Arguments: order and memory layout](arguments-order-and-memory-layout)
+* [Pseudo-code example](pseudo-code-example)
+* [Real world example](real-world-example)
+
 This is a simple post about a few insights and tricks when using bpftrace to debug a Go program with uprobe.
 
 A simple bpftrace program targeting go program could look like this:
@@ -15,7 +22,7 @@ There are two parts that we need to figure out when writing a bpftrace script fo
 1. Target symbol name
 2. Arguments order and its memory layout on the stack
 
-## Target symbol name
+## [Target symbol name](target-symbol-name)
 
 Unlike c programs, after compilation, a function or method name in a Go program could become somewhat complex like: `github.com/hashicorp/vault/vault.(*BarrierView).Put`.
 
@@ -28,7 +35,7 @@ $ readelf -sW /bin/vault | grep -i BarrierView
 ...
 ```
 
-## Arguments: order and memory layout
+## [Arguments: order and memory layout](arguments-order-and-memory-layout)
 
 Arguments are passed over the stack, accessed by bpftraace keywords like: sarg0, sarg1, etc. (This might not be true for future version of Go as the language is also moving to a register-based calling convention, with this coming changes, we can use regular accessor like arg0.)
 
@@ -40,7 +47,7 @@ Order of the arguments is started from left to right in the source code definiti
 
 uretprobe is currently not safe to use due to Go runtime dynamically resizes stack.
 
-## Pseudo-code example
+## [Pseudo-code example](pseudo-code-example)
 
 ```
 type StringHeader struct {
@@ -100,7 +107,7 @@ For the fooPlain and (f foo).plain above, the order of their arguments on the st
 // 0x20
 ```
 
-## Real world example
+## [Real world example](real-world-example)
 
 The function signatures and struct definitions bellow are taken from https://github.com/hashicorp/vault.
 

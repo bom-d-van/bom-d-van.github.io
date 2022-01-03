@@ -2,19 +2,23 @@
 
 (originally posted within the company at AUGUST 20, 2020, this is an edited version.)
 
-* TLDR 1: with luck (aka booking.com experience/knowledge), bpftrace, perf, and pstack, some kernel/system cpu time was reclaimed in one of our high traffic perl system (restoring our service capacity from 150k rpm to 400k rpm).
-* TLDR 2: now we have a way/hack of bpftrace script to unwind perl stack triggered by a kern func.
-* TLDR 3: it’s worth investing in ebpf and bpftrace(+perldtrace). :D
+Table of Contents
+
+* [sudo perf top](sudo-perf-top)
+* [bpftrace kstack and ustack](bpftrace-kstack-and-ustack)
+* [pstack (gdb)](pstack-gdb)
+* [Luck](luck)
+* [Unwinding perl stack with bpftrace without luck](unwinding-perl-stack-with-bpftrace-without-luck)
 
 Recently we are getting some capacity issues for our session system, so I started taking a closer look on it. One thing that caught my eyes quickly was that there were some high system cpu time on the servers, especially noticeable when it’s under heavy load. So I started looking at the cause.
 
-## sudo perf top
+## [sudo perf top](sudo-perf-top)
 
 ![osq_lock](perf-top-edited.png)
 
 So it’s fairly straightforward that osq_lock was a lock and there was contention on it. We had our first clue.
 
-## bpftrace kstack and ustack
+## [bpftrace kstack and ustack](bpftrace-kstack-and-ustack)
 
 Next, I wanted to see what’s the kernel and userspace stack looks like, bpftrace is one way to go (yes, I was constantly look for chances to enhance my bpftrace skills):
 
@@ -39,7 +43,7 @@ Unfortunately, sometimes ustack in bpftrace doesn’t work well. I did’t know 
 
 (`sudo perf top -g` can also do the job here though.)
 
-## pstack (gdb)
+## [pstack (gdb)](pstack-gdb)
 
 This was somewhat a brutal step, I simply looped over all the uwsgi processes and run pstack over them one by one. And based on the `read` func that I got in last step, this is what I found. (However, this was mostly a blind guess that I’m making, and this was my first luck)
 
@@ -70,7 +74,7 @@ uwsgi_perl_after_request was a good lead here, it tells us that it’s something
 
 Still, this information only told me that it’s some perl codes that was triggering the syscall that leaded to lock contention. I needed to figure out what is perl code.
 
-## Luck
+## [Luck](luck)
 
 With all these information, I already had a vague idea of what might be going on. However, I didn’t know good enough about the code that might be triggering the issue, which meant that I didn’t have a good keyword to search it. And it’s tricky to obtain perl stacks on production. One way to do it is to inject perl script with gdb, but it requires intercepting the perl process and injecting some perl codes, what's more, only triggers the perl stacktrace dump when osq_lock is hit, which is in kernel, and it isn't trivial.
 
@@ -96,7 +100,7 @@ system cpu time and request rate before/after
 
 ![system_cpu_edited.png](system_cpu_edited.png)
 
-## Unwinding perl stack with bpftrace without luck
+## [Unwinding perl stack with bpftrace without luck](unwinding-perl-stack-with-bpftrace-without-luck)
 
 Even though our problem of the kernel lock is resolved, I don’t like counting on luck for finding the root cause. So with some tinkering, I managed to work out a script and it’s able to reliably unwinding perl stack when a osq_lock is triggered. And it looks like this:
 

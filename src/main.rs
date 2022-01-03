@@ -1,76 +1,92 @@
-// use std::env;
-
 use regex::Regex;
+use std::env;
 use std::fs;
-// use std::str::pattern::Pattern;
+use std::fs::File;
+use std::io::prelude::*;
 
 fn main() {
-    // let args: Vec<String> = env::args().collect();
-    // let filename = &args[1];
-    let filename =
-        "/Users/bom_d_van/Code/xhu.buzz/to-glob-10m-metrics-using-trie-and-dfa/readme.md";
-
-    // let mut nfile = File::create(filename + ".tmp")?;
-    // file.write_all(b"Hello, world!")?;
+    let args: Vec<String> = env::args().collect();
+    let filename = &args[1];
+    let filename_tmp = [filename, ".tmp"].join("");
 
     let contents = fs::read_to_string(filename).unwrap();
-    // println!("contents = {}", contents);
-
-    let mut lines = contents.split('\n');
-
-    let headers = Regex::new(r"^##+ ").unwrap();
-    let toc_list = Regex::new(r"^[ ]*\*+ ").unwrap();
-
-    // lines.clone().for_each(move |line| {
-    //     if line.is_prefix_of("") {
-    //         println!("line = {}", line);
-    //     }
-    // });
-
-    // let count = lines.count();
-    // for i in 0..count {
-    //     let line = lines.nth(i).unwrap();
-    //     if line == "Table of Contents" {
-    //         println!("line = {}", line);
-    //     }
-    // }
 
     let mut prev_new_line = false;
-    loop {
-        let line = lines.next();
-        if line == None {
-            break;
-        }
-
-        if line.unwrap() == "" {
+    let mut toc_list = vec![];
+    let headers = Regex::new(r"^##+ ").unwrap();
+    for line in contents.split("\n") {
+        if line == "" {
             prev_new_line = true;
             continue;
         }
 
-        if line.unwrap() == "Table of Contents" {
-            println!("line = {}", line.unwrap());
-        }
-        if headers.is_match(line.unwrap()) {
+        if headers.is_match(line) {
             if prev_new_line {
-                println!("line = {}", line.unwrap());
+                toc_list.push(line);
             }
         }
 
         prev_new_line = false;
     }
 
-    var mut toc_started = false;
-    var mut toc_ended = false;
-    for line in contents.split('\n') {
-        if toc_ended {
-            //
+    // let res: Vec<String> = contents.split("\n").map(|s| s.to_string()).collect();
+    // println!("{:?}", res);
+
+    let mut tmp_file = File::create(filename_tmp.clone()).unwrap();
+    let mut toc_started = false;
+    let mut toc_ended = false;
+    let mut toc_written = false;
+    let toc_item_matcher = Regex::new(r"^[ ]*\*+ ").unwrap();
+    let mut lines: Vec<&str> = contents.split("\n").collect();
+    if lines[lines.len() - 1] == "" {
+        lines = (&lines[..lines.len() - 1]).to_vec();
+    }
+    for line in lines {
+        if line == "Table of Contents" {
+            toc_started = true;
+        } else if toc_started && (line != "" && !toc_item_matcher.is_match(line)) {
+            toc_ended = true;
         }
 
-        if line == "Table of Contents" {
-            println!("line = {}", line);
-            toc_started = true;
-        } else if toc_started && (line != "\n" || toc_list.is_match()) {
+        if toc_ended {
+            if toc_started && !toc_written {
+                write!(tmp_file, "Table of Contents\n\n").unwrap();
 
+                for toc_line in toc_list.iter() {
+                    let mut depth = 0;
+                    let mut index = 0;
+                    for c in toc_line.chars() {
+                        if c == '#' {
+                            depth += 1;
+                        } else if c != ' ' {
+                            break;
+                        }
+                        index += 1;
+                    }
+
+                    write!(
+                        tmp_file,
+                        "{}\n",
+                        vec![
+                            "    ".repeat(depth - 2),
+                            "* ".to_string(),
+                            toc_line.to_string().get(index..).unwrap().to_string(),
+                        ]
+                        .join("")
+                    )
+                    .unwrap();
+                }
+
+                write!(tmp_file, "\n").unwrap();
+
+                toc_written = true;
+            }
+        }
+
+        if !toc_started || toc_ended {
+            write!(tmp_file, "{}\n", line).unwrap();
         }
     }
+
+    fs::rename(filename_tmp, filename).unwrap();
 }
