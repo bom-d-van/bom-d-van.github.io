@@ -8,13 +8,18 @@ Handles:
 * [Twitter](https://twitter.com/bom_d_van)
 * [Github](https://github.com/bom-d-van)
 * [LinkedIn](https://www.linkedin.com/in/xiaofan-hu-9616372a/)
+* [Goodreads](https://www.goodreads.com/user/show/6544163-xiaofan-hu)
 
-Blogs:
+About me: I'm a software developer who started my career from web development and continues the journey into an occassional kernel source code reader. I like solving hard real-world prolblem.
+
+Skill keywords: Go, C/C++, Bash, Linux, Perl, Rust, JS, Web Development, Time Series DB, etc.
+
+Blogs/Works:
 
 * graphite/go-carbon works
 	* [How To Shrink Whisper Files](how-to-shrink-whisper-files)
 	* [To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)](to-glob-10m-metrics-using-trie-and-dfa/)
-	* [Concurrent Trie](https://github.com/go-graphite/go-carbon/pull/334)
+	* [Concurrent Trie](ctrie/ctrie.html)
 	* [Quotas](https://github.com/go-graphite/go-carbon/pull/420)
 
 * bpftrace

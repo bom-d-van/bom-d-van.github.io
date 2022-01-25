@@ -111,4 +111,4 @@ svc.group.*.*.haproxy.server.*app-*_prod.weight (notice *bookadmin part)
 
 Solution to this issue is either take the hit as long as the slow down isn't too bad or rewrite the query to make it performant if possible (by removing the leading star with {}; for instance, the example query could be rewritten as: ``svc.group.*.*.haproxy.server.{,pre1,pre2}app-*_prod.weight`).
 
-Full pull request you are interested in all the details: https://github.com/lomik/go-carbon/pull/303/files
+Full pull request is here if you are interested in all the details: [https://github.com/lomik/go-carbon/pull/303/files](https://github.com/lomik/go-carbon/pull/303/files)

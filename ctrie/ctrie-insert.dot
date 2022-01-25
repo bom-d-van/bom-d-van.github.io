@@ -1,0 +1,37 @@
+
+digraph G {
+	concentrate=True;
+	rankdir=TB;
+	node [shape=Mrecord];
+
+	rootd  [label="/\n|{gen:1}" xlabel="trie index"];
+	sys    [label="sys\n|{gen:1}"];
+	sysd   [label="/\n|{gen:1}"];
+	app01  [label="app01\n|{gen:0}"];
+	app01d [label="/\n|{gen:1}"];
+	cpu    [label="cpu\n|{gen:1}"];
+	cpud   [label="/\n|{gen:1}"];
+	user   [label="user\n|{gen:1}"];
+	system [label="system\n|{gen:1}"];
+	idle   [label="idle\n|{gen:1}"];
+
+	rootd -> sys -> sysd -> app01 -> app01d -> cpu -> cpud;
+
+	cpud -> user;
+	cpud -> system;
+	cpud -> idle;
+	
+	app0 [label="app0\n|{gen:1}"];
+	app0_1 [label="1\n|{gen:1}"];
+	app0_2 [label="2\n|{gen:1}"];
+	app02_cpu [label="cpu\n|{gen:1}"];
+	app02_user [label="user\n|{gen:1}"];
+
+	sysd -> app0 -> app0_1 [color=red];
+	sysd -> app0 -> app0_2 [color=red];
+	app0_1 -> app01d [color=red];
+
+	app0_2 -> app02_cpu -> app02_user [color=red];
+
+	stack [label="{/}|{sys}|/|app-01|/|cpu|/user" xlabel="query stack" shape=record];
+}
