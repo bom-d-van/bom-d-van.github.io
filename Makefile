@@ -1,5 +1,6 @@
 
-all: bpftrace/go.html \
+all: index.html \
+     bpftrace/go.html \
      bpftrace/debug_osq_lock.html \
      bpftrace/perldtrace.html \
      to-glob-10m-metrics-using-trie-and-dfa/index.html \
@@ -23,3 +24,6 @@ how-to-shrink-whisper-files/index.html: how-to-shrink-whisper-files/readme.md
 
 ctrie/ctrie.html: ctrie/ctrie.md
 	./gen.sh 'Making The Trie Index And DFA Query Concurrent/Realtime' ctrie/ctrie.md ctrie/ctrie.html
+
+index.html: readme.md
+	pandoc --standalone --template template_index.html readme.md --metadata title="Xiaofan Hu's blogs" -o index.html
