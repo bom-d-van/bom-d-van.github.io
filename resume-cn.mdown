@@ -1,15 +1,16 @@
-# Xiaofan Hu's Resume
+# 胡小帆简历
 
-## Summary
+## 总结
 
-* Name: Xiaofan Hu
-* Email: xiaofan.xhu@gmail.com
+* 姓名：胡小帆
+* 邮箱：xiaofan.xhu@gmail.com
 * GitHub: https://github.com/bom-d-van
-* Blog: https://www.xhu.buzz/
+* 博客： https://www.xhu.buzz/
 
-Graduate of HuiZhou University, majored in Network Engineering with a Bachelor of Science. Three and a half years of Go web application development, three years of Ruby on Rails experiences.
+十年互联网工作经验，从五十多人的外包产品公司，到五百多人的云服务商，再到一万多人的大型互联网公司。我有从前端，中台，再到后端的开发经验。
+目前我的工作重心主要放在高可用基础架构服务，数据库内核开发，和系统编程。
 
-Skills: Go, Linux, C, Bash, SQL (MySQL/PostgreSQL), Redis, JS (ReactJS/jQuery/Backbone/ExtJS/etc), Ruby (RoR)
+主要技术： Go, Linux, C, Bash, SQL (MySQL/PostgreSQL), Redis, JS (ReactJS/jQuery/Backbone/ExtJS/etc), Ruby (RoR)
 Experience, EBPF, SLO, SRE, EBPF, uwsgi, Perl
 
 ## October 2017 - July 2022 (Booking.com Amsterdam)
