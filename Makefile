@@ -27,3 +27,5 @@ ctrie/ctrie.html: ctrie/ctrie.md
 
 index.html: readme.md
 	pandoc --standalone --template template_index.html readme.md --metadata title="Xiaofan Hu's blogs" -o index.html
+
+# marp --pdf -o graphite-admin-and-quota.pdf --allow-local-files graphite-admin-and-quota.md && open graphite-admin-and-quota.pdf

@@ -1,11 +1,6 @@
----
-CJKmainfont: Noto Sans CJK SC Regular
-CJKoptions: AutoFakeBold
----
-
 # 胡小帆简历
 
-## 总结
+## 基本信息
 
 * 姓名：胡小帆
 * 邮箱：xiaofan.xhu@gmail.com
@@ -16,43 +11,48 @@ CJKoptions: AutoFakeBold
 目前我的工作重心主要放在高可用基础架构服务，数据库内核开发，和系统编程。
 
 主要技术： Go, Linux, C, Bash, SQL (MySQL/PostgreSQL), Redis, JS (ReactJS/jQuery/Backbone/ExtJS/etc), Ruby (RoR)
-Experience, EBPF, SLO, SRE, EBPF, uwsgi, Perl
+Experience, EBPF, SLO, SRE, EBPF, uwsgi, Perl, Puppet
 
-## October 2017 - July 2022 (Booking.com Amsterdam)
+## 2017年10月 - 2022年7月 (Booking.com 荷兰阿姆斯特丹)
 
-Title: Developer / Senior Developer
+职位：研发/高级研发工程师
 
-Keywords: Time Series Database, Go, Perl, Large scale distributed systems, Site Reliability Engineering, Kubernetes, Helm, System Programming
+技术栈: Time Series Database, Go, Perl, Large scale distributed systems, Site Reliability Engineering, Kubernetes, Helm, System Programming, Ansible, Puppet
 
-Achievements:
+主要经验:
 
-* Scaling large scale distributed time series systems (Graphite)
-  * By adopting Facebook Gorilla compression algorithm, design and implement a new file format for compression that were able reduces disk space usage from 30% - 70%.
-  * Design and implementing a new index algorithm by using [NFA+DFA algorithms introduced by Russ Cox](https://swtch.com/~rsc/regexp/regexp1.html) that is able to support 10 - 40 millions uniq metric paths with low indexing overhead and low tail latencies.
-  * Introducing a quota subsystem for reliability and control that are able efficiently
-* Scarling large scale distributed config management system
-  * Scale the API backend to support 60k endpoints
-  * Define and implement SLI and SLO for monitoring propagation latencies, usage and scale RPS on a per role basis.
+* 研发和维护高可用大型分布式时序数据库Go-Graphite（存储和查询方向）
+  * 规模：1千多台服务器，1PB+ SSD，500万Metrics，2kQPS
+  * 设计和实现了基于Facebook的Gorilla论文中描述的Gorilla[时序数据压缩算法的新存储文件结构](https://www.xhu.buzz/how-to-shrink-whisper-files/)，达到了30%-70%的压缩率。
+  * 设计和实现了基于Russ Cox的DFA算法[Globbing查询算法的前缀树索引](https://www.xhu.buzz/to-glob-10m-metrics-using-trie-and-dfa/)，实现了高性能的索引效率和低延迟的查询，支持单台服务器高效索引10-40 Millions Metrics。
+  * 设计和实现了[并发前缀树索引](https://www.xhu.buzz/ctrie/ctrie.html)，减少了数据库内存消耗，支持实时索引新数据
+  * 设计和实现了高性能的[Quota子系统](https://github.com/go-graphite/go-carbon/pull/420)，减少了多租户系统中的Noisy Neighbour和实现有效资源管理和控制
+* 扩展和维护高可用配置分发系统 (Scaling large scale distributed config management system)
+  * 规模：8k RPS, 支持1300多个后端系统和6万多个客户端
+  * 拓展API后端支持高并发和高可用
+  * 定义和实行SLI和SLO，包括Avalability, Propagation Latency, Error Rate, 后端系统请求分布情况等
+  * 优化Perl客户端
 * Site reliability engineering
-  * uwsgi plugin
-* Production Troubleshooting
-* Push and scale a fast partner signup channel
+  * 运维管理多个中小型后端系统(规模从10到100多台服务器)，debug和oncall各种生产环境问题
+  * 实现了针对公司内部envoy控制面的自动压测系统
+  * 实现了uwsgi上超时回调机制用于收集线上系统[Graceful Harakiri](https://github.com/unbit/uwsgi/pull/2212)
+  * 研发和使用EBPF工具debug[在线上产系统问题](https://www.xhu.buzz/bpftrace/debug_osq_lock.html)
+  * Debug和Resolve了Hashicorp Vault系统的[Bug](https://github.com/hashicorp/vault/issues/11178)
+* 研发和拓展新fast partner signup channel
 
-## September 2016 - August 2017 (UCloud Shanghai)
+## 2016年九月 - 2017八月 (UCloud 上海)
 
-Title: Web Development Engineer
+职位：研发工程师
 
-Maintain and develop the traffic control system which is an important part of networking control, using C++,
-Go, Bash etc. Responsibilities and Experiences included:
+* 维护和研发公司云平台的基于Linux tc的流量控制系统。
+* 研发了带宽操作的对账系统。
+* 使用Quagga和Keepalived实现了Redis的跨机房高可用
+* 研发新的ingress流量控制下发服务
+* 研发数据一致性检测的脚本和错误日志监控
 
-* Develop a statistical system for bandwidth operations
-* Use Quagga and Keepalived to implement Redis high availability across different data centers in the same region
-* Develop new ingress traffic control feature
-* System problems on-call, writing up scripts for data consistency checking and log error monitoring
+## 2013年五月 - 2016八月 (The Plant 杭州/东京)
 
-## September 2014 - March 2016 (The Plant Hangzhou) / March 2016 - August 2016 (The Plant Tokyo)
-
-Title: Developer
+职位：研发工程师
 
 Mainly Worked and maintained two EC projects in Go and a few other smallish projects like product recommendations (by using Mahout), and a react project. Responsibilities and Experiences included:
 
@@ -64,10 +64,6 @@ Mainly Worked and maintained two EC projects in Go and a few other smallish proj
 
 Product Links: https://analoguelife.com/ Aussie Parking: https://aussieparking.com.au/
 
-## May 2013 - September 2014 (The Plant Hangzhou)
-
-Title: Developer
-
 Worked on Qortex, a communication web application designed and made for high performance teams. Experiences and Personal highlights included:
 
 * VirtualBox Packaging with auto-updates support for Enterprise users Go package management (Pak)
@@ -76,9 +72,9 @@ Worked on Qortex, a communication web application designed and made for high per
 
 Qortex Links: https://qortex.com/about https://qortex.com/enterprise
 
-## May 2010 - Feb 2013 Student Developer in Wando Lab, HuiZhou University
+## 2010五月 - 2013二月 (惠州大学Wando实验室)
 
-Involved in the design and development of two ERP (Enterprise Resource Planning) systems in RoR and Ext JS. It's a great learning experience and an excellent environment for helping improve programming and collaboration skills.
+参与两个ERP系统的设计和研发。主要技术站是Ruby on Rails和ExtJS。
 
 ## Open Source Projects
 

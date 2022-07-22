@@ -24,7 +24,7 @@ Achievements:
   * By adopting Facebook Gorilla compression algorithm, design and implement a new file format for compression that were able reduces disk space usage from 30% - 70%.
   * Design and implementing a new index algorithm by using [NFA+DFA algorithms introduced by Russ Cox](https://swtch.com/~rsc/regexp/regexp1.html) that is able to support 10 - 40 millions uniq metric paths with low indexing overhead and low tail latencies.
   * Introducing a quota subsystem for reliability and control that are able efficiently
-* Scarling large scale distributed config management system
+* Scaling large scale distributed config management system
   * Scale the API backend to support 60k endpoints
   * Define and implement SLI and SLO for monitoring propagation latencies, usage and scale RPS on a per role basis.
 * Site reliability engineering
@@ -39,9 +39,9 @@ Title: Web Development Engineer
 Maintain and develop the traffic control system which is an important part of networking control, using C++,
 Go, Bash etc. Responsibilities and Experiences included:
 
-* Develop a statistical system for bandwidth operations
+* Develop an accounting system for bandwidth usage monitoring and operations
 * Use Quagga and Keepalived to implement Redis high availability across different data centers in the same region
-* Develop new ingress traffic control feature
+* Develop new ingress traffic control feature in
 * System problems on-call, writing up scripts for data consistency checking and log error monitoring
 
 ## September 2014 - March 2016 (The Plant Hangzhou) / March 2016 - August 2016 (The Plant Tokyo)
