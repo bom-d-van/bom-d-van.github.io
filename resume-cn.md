@@ -33,7 +33,7 @@
 * 扩展和维护高可用配置分发系统 (Scaling large scale distributed config management system)
   * 规模：8k RPS, 支持1300多个后端系统和6万多个客户端
   * 拓展API后端支持高并发和高可用
-  * 定义和实行SLI和SLO，包括Avalability, Propagation Latency, Error Rate, 后端系统请求分布情况等
+  * 定义和实行SLI和SLO，包括Availability, Propagation Latency, Error Rate, 后端系统请求分布情况等
   * 优化Perl客户端
 * Site Reliability Engineering
   * 运维管理多个中小型后端系统(规模从10到100多台服务器)，debug和oncall各种生产环境问题
@@ -88,7 +88,7 @@
 * [Go-Carbon](https://github.com/go-graphite/go-carbon): Graphite Storage in Go.
 * [Harp](https://github.com/bom-d-van/harp): A Go application deployment tool.
 * [bin packing](https://github.com/bom-d-van/binpacking): A Golang 3D Bin Packing Implementation
-* [AssetTube](https://github.com/theplant/assettube): A tool fingerprinting and serving asset files for Go Web applications.
+* [AssetTube](https://github.com/theplant/assettube): A tool for fingerprinting and serving asset files for Go Web applications.
 * [CHTTP](https://github.com/bom-d-van/chttp): A stupid and incomplete http/http2 C implementation, built for learning C.
-* [plperf](https://github.com/bom-d-van/plperf): A tracing program for uwsgi+perl environment, using ebpf + perldtrace, in Go.
+* [plperf](https://github.com/bom-d-van/plperf): A tracing program for uwsgi+perl environment, using ebpf and perl dtrace, in Go.
 * [Pak](https://github.com/theplant/pak): A Go package version management tool.

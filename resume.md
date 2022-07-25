@@ -21,16 +21,27 @@ Keywords: Time Series Database, Go, Perl, Large scale distributed systems, Site 
 Achievements:
 
 * Scaling large scale distributed time series systems (Graphite)
-  * By adopting Facebook Gorilla compression algorithm, design and implement a new file format for compression that were able reduces disk space usage from 30% - 70%.
+  * Scale: over 1k servers, over 1 PB SSD storage, 500 million uniq metrics, 2k QPS, 30m data points per second on ingestion.
+  * By adopting [Facebook Gorilla compression algorithm](https://www.vldb.org/pvldb/vol8/p1816-teller.pdf), design and implement a new file format for compression that reduces disk space usage from 30% - 70%.
   * Design and implementing a new index algorithm by using [NFA+DFA algorithms introduced by Russ Cox](https://swtch.com/~rsc/regexp/regexp1.html) that is able to support 10 - 40 millions uniq metric paths with low indexing overhead and low tail latencies.
   * Introducing a quota subsystem for reliability and control that are able efficiently
+  * Design and implement [concurrent trie indexing](https://www.xhu.buzz/ctrie/ctrie.html) that were able to reduce memory usage and supports real time indexing
+  * Design and implement a higher performant [Quota subsystems](https://github.com/go-graphite/go-carbon/pull/420) that able to reduce the noisy neighbor effect in a multi-tenant environment and achieves efficient resource management and control
+* Scaling and maintaining a large scale distributed config management system
+  * Scale: 8k RPS, over 1300 backend systems and over 60k end points
+  * Scaling the API backend to support high concurrency and high availability
+  * Define and implement SLI and SLO，including Availability, Propagation Latency, Error Rate, Request distributions across different backends and roles, etc.
+  * Optimize Perl clients
 * Scaling large scale distributed config management system
   * Scale the API backend to support 60k endpoints
   * Define and implement SLI and SLO for monitoring propagation latencies, usage and scale RPS on a per role basis.
-* Site reliability engineering
-  * uwsgi plugin
-* Production Troubleshooting
-* Push and scale a fast partner signup channel
+* Site Reliability Engineering
+  * Maintain multiple medium and small backend roles (servers ranging from 10 to 100s), debug production issues and being on-call.
+  * Design and implement an internal auto-capacity testing system targeting envoy based systems by interacting with an internal control plane API.
+  * Design and implement an uWSGI timeout callback mechanism for logging automation that's called [Graceful Harakiri](https://github.com/unbit/uwsgi/pull/2212)
+  * Research and implement EBPF based tooling for [debugging production issues](https://www.xhu.buzz/bpftrace/debug_osq_lock.html)
+  * Debug and resolve a [storage leakage Bug](https://github.com/hashicorp/vault/issues/11178) in Hashicorp Vault production system.
+* Develop and scale a new fast partner signup channel/product.
 
 ## September 2016 - August 2017 (UCloud Shanghai)
 
@@ -76,10 +87,10 @@ Involved in the design and development of two ERP (Enterprise Resource Planning)
 
 ## Open Source Projects
 
-* Go-Carbon: Graphite Storage in Go.
-* Harp: A Go application deployment tool.
-* bin packing: A Golang 3D Bin Packing Implementation
-* AssetTube: A tool fingerprinting and serving asset files for Go Web applications.
-* CHTTP: A stupid and incomplete http/http2 C implementation, built for learning C.
-* Pak: A Go package version management tool.
-* plperf
+* [Go-Carbon](https://github.com/go-graphite/go-carbon): Graphite Storage in Go.
+* [Harp](https://github.com/bom-d-van/harp): A Go application deployment tool.
+* [bin packing](https://github.com/bom-d-van/binpacking): A Golang 3D Bin Packing Implementation
+* [AssetTube](https://github.com/theplant/assettube): A tool for fingerprinting and serving asset files for Go Web applications.
+* [CHTTP](https://github.com/bom-d-van/chttp): A stupid and incomplete http/http2 C implementation, built for learning C.
+* [plperf](https://github.com/bom-d-van/plperf): A tracing program for uwsgi+perl environment, using ebpf and perl dtrace, in Go.
+* [Pak](https://github.com/theplant/pak): A Go package version management tool.
