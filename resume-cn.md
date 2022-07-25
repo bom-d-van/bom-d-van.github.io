@@ -7,7 +7,7 @@
 * GitHub: https://github.com/bom-d-van
 * 博客： https://www.xhu.buzz/
 
-近十年的互联网工作经历，有前端，中台，后端和高可用和高流量分布式系统的开发和维护经验。
+近十年的互联网工作经验，涵盖了前中后端，高可用，高流量分布式系统的开发和维护。
 
 目前工作重心主要放在高可用基础架构服务，分布式系统，数据库内核开发，和系统编程。
 
@@ -25,7 +25,7 @@
 主要经验:
 
 * 研发和维护高可用大型分布式时序数据库Go-Graphite（存储和查询方向）
-  * 规模：1千多台服务器，PB级SSD数据量，500万Metrics，2kQPS，3千万data point每秒的Ingestion数据量
+  * 规模：1千多台服务器，PB级SSD数据量，5亿Unique Metrics，2kQPS，3千万data point每秒的Ingestion数据量
   * 设计和实现了基于[Facebook的Gorilla论文](https://www.vldb.org/pvldb/vol8/p1816-teller.pdf)中描述的Gorilla[时序数据压缩算法的新存储文件结构](https://www.xhu.buzz/how-to-shrink-whisper-files/)，达到了30%-70%的压缩率。
   * 设计和实现了基于Russ Cox的DFA算法的[Globbing查询算法的前缀树索引](https://www.xhu.buzz/to-glob-10m-metrics-using-trie-and-dfa/)，实现了高性能的索引效率和低延迟的查询，支持单台服务器高效索引10-40 Millions Metrics。
   * 设计和实现了[并发前缀树索引](https://www.xhu.buzz/ctrie/ctrie.html)，减少了数据库内存消耗，支持实时索引新数据
