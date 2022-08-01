@@ -4,19 +4,22 @@
 
 * Name: Xiaofan Hu
 * Email: xiaofan.xhu@gmail.com
+* Phone: +86 15224019502
 * GitHub: https://github.com/bom-d-van
 * Blog: https://www.xhu.buzz/
 
-Graduate of HuiZhou University, majored in Network Engineering with a Bachelor of Science. Three and a half years of Go web application development, three years of Ruby on Rails experiences.
+I have almost 10 years of experiences being a software engineer, covering from front end all the way to the back end systems and are familiar with scaling and developing highly concurrent, highly available distributed systems.
 
-Skills: Go, Linux, C, Bash, SQL (MySQL/PostgreSQL), Redis, JS (ReactJS/jQuery/Backbone/ExtJS/etc), Ruby (RoR)
-Experience, EBPF, SLO, SRE, EBPF, uwsgi, Perl
+My current focus in mainly in high available infrastructure, distributed systems, database kernel development, and system programming.
+
+* Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
+* Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
 ## October 2017 - July 2022 (Booking.com Amsterdam)
 
-Title: Developer / Senior Developer
-
-Keywords: Time Series Database, Go, Perl, Large scale distributed systems, Site Reliability Engineering, Kubernetes, Helm, System Programming
+* Title: Developer/Senior Developer
+* Company scale: 2000 Tech/10,000+ Total
+* Tech: Time Series Database, Go, Perl, Large Scale Distributed Systems, Site Reliability Engineering, Kubernetes, Helm, System Programming, Ansible, Puppet, Java
 
 Achievements:
 
@@ -25,12 +28,13 @@ Achievements:
   * By adopting [Facebook Gorilla compression algorithm](https://www.vldb.org/pvldb/vol8/p1816-teller.pdf), design and implement a new file format for compression that reduces disk space usage from 30% - 70%.
   * Design and implementing a new index algorithm by using [NFA+DFA algorithms introduced by Russ Cox](https://swtch.com/~rsc/regexp/regexp1.html) that is able to support 10 - 40 millions uniq metric paths with low indexing overhead and low tail latencies.
   * Introducing a quota subsystem for reliability and control that are able efficiently
-  * Design and implement [concurrent trie indexing](https://www.xhu.buzz/ctrie/ctrie.html) that were able to reduce memory usage and supports real time indexing
+  * Design and implement a [lockless and concurrent trie indexing](https://www.xhu.buzz/ctrie/ctrie.html) that were able to reduce memory usage and supports real time indexing
   * Design and implement a higher performant [Quota subsystems](https://github.com/go-graphite/go-carbon/pull/420) that able to reduce the noisy neighbor effect in a multi-tenant environment and achieves efficient resource management and control
+  * Optimize the rebalance tool for the systems, by introducing [a self-regulated mechanism using health check and jitters](https://github.com/go-graphite/buckytools/pull/26), the changes has produced faster and adjustable sync rate and enhances observability.
 * Scaling and maintaining a large scale distributed config management system
   * Scale: 8k RPS, over 1300 backend systems and over 60k end points
   * Scaling the API backend to support high concurrency and high availability
-  * Define and implement SLI and SLO，including Availability, Propagation Latency, Error Rate, Request distributions across different backends and roles, etc.
+  * Define and implement SLI and SLO metrics, including Availability, Propagation Latency, Error Rate, Request distributions across different backends and roles, etc.
   * Optimize Perl clients
 * Scaling large scale distributed config management system
   * Scale the API backend to support 60k endpoints
@@ -45,7 +49,11 @@ Achievements:
 
 ## September 2016 - August 2017 (UCloud Shanghai)
 
-Title: Web Development Engineer
+* Title: Web Development Engineer
+* Company scale: 500+
+* Tech: Go, Bash, C++, Linux, TC, Networking, DPDK
+
+Achievements:
 
 Maintain and develop the traffic control system which is an important part of networking control, using C++,
 Go, Bash etc. Responsibilities and Experiences included:
@@ -55,31 +63,24 @@ Go, Bash etc. Responsibilities and Experiences included:
 * Develop new ingress traffic control feature in
 * System problems on-call, writing up scripts for data consistency checking and log error monitoring
 
-## September 2014 - March 2016 (The Plant Hangzhou) / March 2016 - August 2016 (The Plant Tokyo)
+## May 2013 - August 2016 (The Plant Hangzhou/Tokyo)
 
-Title: Developer
+* Title: Developer
+* Company scale: 50+
+* Tech: Go, Bash, Ruby on Rails, Linux
 
-Mainly Worked and maintained two EC projects in Go and a few other smallish projects like product recommendations (by using Mahout), and a react project. Responsibilities and Experiences included:
+Achievements:
 
-* 3D bin packing algorithm
-* Order and Payment(first GMO, then migrated to Stripe) User register/login, products management
-* Memory leak problem fixes
-* Unit/Integration tests
-* System deployment and maintenance etc
-
-Product Links: https://analoguelife.com/ Aussie Parking: https://aussieparking.com.au/
-
-## May 2013 - September 2014 (The Plant Hangzhou)
-
-Title: Developer
-
-Worked on Qortex, a communication web application designed and made for high performance teams. Experiences and Personal highlights included:
-
-* VirtualBox Packaging with auto-updates support for Enterprise users Go package management (Pak)
-* Deployment/migration automation script (developed later into Harp) Email processing/sending (Beanstalkd, SMTP)
-* Chatting (Ejabberd Integration) API maintenance
-
-Qortex Links: https://qortex.com/about https://qortex.com/enterprise
+* Mainly Worked and maintained two EC projects in Go and a few other smallish projects like product recommendations (by using Mahout), and a react project. Responsibilities and Experiences included:
+  * 3D bin packing algorithm
+  * Order and Payment(first GMO, then migrated to Stripe) User register/login, products management
+  * Memory leak problem fixes
+  * Unit/Integration tests
+  * System deployment and maintenance etc
+* Worked on Qortex, a communication web application designed and made for high performance teams. Experiences and Personal highlights included:
+  * VirtualBox Packaging with auto-updates support for Enterprise users Go package management (Pak)
+  * Deployment/migration automation script (developed later into Harp) Email processing/sending (Beanstalkd, SMTP)
+  * Chatting (Ejabberd Integration) API maintenance
 
 ## May 2010 - Feb 2013 Student Developer in Wando Lab, HuiZhou University
 
@@ -89,7 +90,7 @@ Involved in the design and development of two ERP (Enterprise Resource Planning)
 
 * [Go-Carbon](https://github.com/go-graphite/go-carbon): Graphite Storage in Go.
 * [Harp](https://github.com/bom-d-van/harp): A Go application deployment tool.
-* [bin packing](https://github.com/bom-d-van/binpacking): A Golang 3D Bin Packing Implementation
+* [3D Bin Packing](https://github.com/bom-d-van/binpacking): A Golang 3D Bin Packing Implementation
 * [AssetTube](https://github.com/theplant/assettube): A tool for fingerprinting and serving asset files for Go Web applications.
 * [CHTTP](https://github.com/bom-d-van/chttp): A stupid and incomplete http/http2 C implementation, built for learning C.
 * [plperf](https://github.com/bom-d-van/plperf): A tracing program for uwsgi+perl environment, using ebpf and perl dtrace, in Go.

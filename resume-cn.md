@@ -4,6 +4,7 @@
 
 * 姓名：胡小帆
 * 邮箱：xiaofan.xhu@gmail.com
+* 电话：+86 15224019502
 * GitHub: https://github.com/bom-d-van
 * 博客： https://www.xhu.buzz/
 
@@ -11,8 +12,8 @@
 
 目前工作重心主要放在高可用基础架构服务，分布式系统，数据库内核开发，和系统编程。
 
-* 编程语言：Go, Linux, C, Bash, Perl, Java, JS, Ruby, Python
-* 相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc
+* 编程语言：Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
+* 相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
 ## 主要工作经验
 
@@ -25,11 +26,12 @@
 主要经验:
 
 * 研发和维护高可用大型分布式时序数据库Go-Graphite（存储和查询方向）
-  * 规模：1千多台服务器，PB级SSD数据量，5亿Unique Metrics，2kQPS，3千万data point每秒的Ingestion数据量
+  * 规模：1千多台服务器，PB级数据量(SSD)，5亿Unique Metrics (3 replicas)，2k+ QPS，3千万data point每秒的Ingestion
   * 设计和实现了基于[Facebook的Gorilla论文](https://www.vldb.org/pvldb/vol8/p1816-teller.pdf)中描述的Gorilla[时序数据压缩算法的新存储文件结构](https://www.xhu.buzz/how-to-shrink-whisper-files/)，达到了30%-70%的压缩率。
   * 设计和实现了基于Russ Cox的DFA算法的[Globbing查询算法的前缀树索引](https://www.xhu.buzz/to-glob-10m-metrics-using-trie-and-dfa/)，实现了高性能的索引效率和低延迟的查询，支持单台服务器高效索引10-40 Millions Metrics。
-  * 设计和实现了[并发前缀树索引](https://www.xhu.buzz/ctrie/ctrie.html)，减少了数据库内存消耗，支持实时索引新数据
+  * 设计和实现了[Lockless and concurrent 前缀树索引](https://www.xhu.buzz/ctrie/ctrie.html)，减少了数据库内存消耗，支持实时索引新数据
   * 设计和实现了高性能的[Quota子系统](https://github.com/go-graphite/go-carbon/pull/420)，减少了多租户系统中的Noisy Neighbour和实现有效资源管理和控制
+  * 优化了集群Rebalancing tool，引入了[基于health check的自调节速率机制](https://github.com/go-graphite/buckytools/pull/26)，在避免导致服务器负载过高的情况下优化了sync的速率以及提高了系统可监控性。
 * 扩展和维护高可用配置分发系统 (Scaling large scale distributed config management system)
   * 规模：8k RPS, 支持1300多个后端系统和6万多个客户端
   * 拓展API后端支持高并发和高可用
@@ -87,7 +89,7 @@
 
 * [Go-Carbon](https://github.com/go-graphite/go-carbon): Graphite Storage in Go.
 * [Harp](https://github.com/bom-d-van/harp): A Go application deployment tool.
-* [bin packing](https://github.com/bom-d-van/binpacking): A Golang 3D Bin Packing Implementation
+* [3D Bin Packing](https://github.com/bom-d-van/binpacking): A Golang 3D Bin Packing Implementation
 * [AssetTube](https://github.com/theplant/assettube): A tool for fingerprinting and serving asset files for Go Web applications.
 * [CHTTP](https://github.com/bom-d-van/chttp): A stupid and incomplete http/http2 C implementation, built for learning C.
 * [plperf](https://github.com/bom-d-van/plperf): A tracing program for uwsgi+perl environment, using ebpf and perl dtrace, in Go.

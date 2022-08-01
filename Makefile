@@ -33,4 +33,17 @@ resume-cn:
 	wkhtmltopdf resume-cn.html resume-cn.pdf
 	open resume-cn.pdf
 
+resume:
+# 	pandoc -f markdown -t pdf -o resume.pdf resume.md
+	pandoc -f markdown -t html -o resume.html --template template_resume.html resume.md
+	wkhtmltopdf resume.html resume.pdf
+	open resume.pdf
+
+resume-merged:
+	pandoc -f markdown -t html -o resume-en-merged.html resume.md
+	pandoc -f markdown -t html -o resume-cn-merged.html resume-cn.md
+	./merge_resume.sh > resume-merged.html
+	wkhtmltopdf resume-merged.html resume-merged.pdf
+	open resume-merged.pdf
+
 # marp --pdf -o graphite-admin-and-quota.pdf --allow-local-files graphite-admin-and-quota.md && open graphite-admin-and-quota.pdf
