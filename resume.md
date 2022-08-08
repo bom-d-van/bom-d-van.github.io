@@ -10,7 +10,7 @@
 
 I have almost 10 years of experiences being a software engineer, covering from front end all the way to the back end systems and are familiar with scaling and developing highly concurrent, highly available distributed systems.
 
-My current focus is mainly in high available infrastructure, distributed systems, database kernel development (both TSDB and general), and system programming.
+My current focus is mainly in highly available infrastructure services, distributed systems, database kernel development (both TSDB and general), and system programming.
 
 * Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
 * Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
@@ -95,3 +95,7 @@ Involved in the design and development of two ERP (Enterprise Resource Planning)
 * [CHTTP](https://github.com/bom-d-van/chttp): A stupid and incomplete http/http2 C implementation, built for learning C.
 * [plperf](https://github.com/bom-d-van/plperf): A tracing program for uwsgi+perl environment, using ebpf and perl dtrace, in Go.
 * [Pak](https://github.com/theplant/pak): A Go package version management tool.
+
+## Education
+
+Bachelor of Network Engineering, from September 2009 till June 2013, at Huizhou University of Guangdong China.

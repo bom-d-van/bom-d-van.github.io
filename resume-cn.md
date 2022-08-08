@@ -3,8 +3,9 @@
 ## 基本信息
 
 * 姓名：胡小帆
-* 邮箱：xiaofan.xhu@gmail.com
+* 学历：惠州学院大学本科网络工程
 * 电话：+86 15224019502
+* 邮箱：xiaofan.xhu@gmail.com
 * GitHub: https://github.com/bom-d-van
 * 博客： https://www.xhu.buzz/
 
@@ -20,7 +21,7 @@
 ### 2017年10月 - 2022年7月 (Booking.com 荷兰阿姆斯特丹)
 
 * 职位：研发工程师/高级研发工程师
-* 公司规模：2000研发/1万多非研发
+* 公司规模：2000+研发/10000+非研发
 * 技术栈: Time Series Database, Go, Perl, Large Scale Distributed Systems, Site Reliability Engineering, Kubernetes, Helm, System Programming, Ansible, Puppet, Java
 
 主要经验:
