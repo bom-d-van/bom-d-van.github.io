@@ -21,6 +21,11 @@ Blogs/Works:
 	* [To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)](to-glob-10m-metrics-using-trie-and-dfa/)
 	* [Concurrent Trie](ctrie/ctrie.html)
 	* [Quotas](https://github.com/go-graphite/go-carbon/pull/420)
+	* Interesting/Memorable Bug Fixes and Performance Enhancements
+		* [quota: throughput racy enforcement bug fixes](https://github.com/go-graphite/go-carbon/pull/467)
+		* [trie: stop indexing empty directory nodes](https://github.com/go-graphite/go-carbon/pull/445)
+		* [quota: adopt a more performant throughput throttling implementation](https://github.com/go-graphite/go-carbon/pull/420/commits/970113dbc78ca625c76e1c5feb2ed91f4bae0bab)
+		* [go-whisper: 0.0/0.0 is NAN](https://github.com/go-graphite/go-whisper/pull/7)
 
 * bpftrace
 	* [bpftrace+perldtrace usages](/bpftrace/perldtrace.html)
