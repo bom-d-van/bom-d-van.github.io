@@ -47,7 +47,7 @@
 <li><a href="#pros">Pros</a></li>
 <li><a href="#cons">Cons</a></li>
 </ul>
-<p>TLDR: By combining Trie and DFA for indexing metric paths, letting two trees walking over each other, this new implementation halves the memory usage of go-carbon process (avg 57% less, from 20.5G to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5 of it with trigram index on go-carbon. This is making us a one step closer to having wholly cwhisper-powered clusters!</p>
+<p>TLDR: By combining Trie and DFA (inspired by Russ Cox’s “<a href="https://swtch.com/~rsc/regexp/regexp1.html">Regular Expression Matching Can Be Simple And Fast</a>” post) for indexing metric paths, letting two trees walking over each other, this new implementation halves the memory usage of go-carbon process (avg 57% less, from 20.5G to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5 of it with trigram index on go-carbon. This is making us a one step closer to having wholly cwhisper-powered clusters!</p>
 <h2 id="short-context"><a href="#short-context">Short context</a></h2>
 <p>Metrics are saved as files on go-carbon (one file per metric), the graphite storage daemon.</p>
 <p>When we make a query to Graphite, like general.tuning.minutely.sys_stats.{extranet,xydapi}.host.prod.<em>.</em>.stat.cpu.all.idle.mean, before go-carbon fetches data from file, go-carbon needs to figure out what files to read from. Using filepath.Glob (a golang stdlib function for globbing files) is getting expensive when you have millions of metrics (too many syscall). The current go-carbon is using trigram indexing with filepath.Glob as fallback for fetching, which also has performance issues when metrics number rise above 10 millions.</p>
