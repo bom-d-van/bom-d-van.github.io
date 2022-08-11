@@ -3,7 +3,7 @@
 ## 基本信息
 
 * 姓名：胡小帆
-* 学历：惠州学院大学本科网络工程
+* 学历：惠州学院大学本科网络工程（2009年9月 - 2013年6月）
 * 电话：+86 15224019502
 * 邮箱：xiaofan.xhu@gmail.com
 * GitHub: https://github.com/bom-d-van
@@ -14,7 +14,7 @@
 目前工作重心主要放在高可用基础架构服务，分布式系统，数据库内核开发，和系统编程。
 
 * 编程语言：Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
-* 相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
+* 相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
 ## 主要工作经验
 

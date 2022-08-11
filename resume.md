@@ -13,7 +13,7 @@ I have almost 10 years of experiences being a software engineer, covering from f
 My current focus is mainly in highly available infrastructure services, distributed systems, database kernel development (both TSDB and general), and system programming.
 
 * Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
-* Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
+* Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
 ## October 2017 - July 2022 (Booking.com Amsterdam)
 
