@@ -14,7 +14,7 @@
 目前工作重心主要放在高可用基础架构服务，分布式系统，数据库内核开发，和系统编程。
 
 * 编程语言：Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
-* 相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
+* 相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
 ## 主要工作经验
 
@@ -34,7 +34,7 @@
   * 设计和实现了高性能的[Quota子系统](https://github.com/go-graphite/go-carbon/pull/420)，减少了多租户系统中的Noisy Neighbour和实现有效资源管理和控制
   * 优化了集群Rebalancing tool，引入了[基于health check的自调节速率机制](https://github.com/go-graphite/buckytools/pull/26)，在避免导致服务器负载过高的情况下优化了sync的速率以及提高了系统可监控性。
 * 扩展和维护高可用配置分发系统 (Scaling large scale distributed config management system)
-  * 规模：8k RPS, 支持1300多个后端系统和6万多个客户端
+  * 规模：8k RPS, 支持1300多个后端系统和6万多个客户端节点
   * 拓展API后端支持高并发和高可用
   * 定义和实行SLI和SLO，包括Availability, Propagation Latency, Error Rate, 后端系统请求分布情况等
   * 优化Perl客户端
@@ -46,7 +46,7 @@
   * Debug和解决了Hashicorp Vault生产系统的[存储泄漏的Bug](https://github.com/hashicorp/vault/issues/11178)
 * 研发和拓展新fast partner signup channel
 
-### 2016年九月 - 2017八月 (UCloud 中国上海)
+### 2016年9月 - 2017年8月 (UCloud 中国上海)
 
 * 职位：研发工程师
 * 公司规模：500+
@@ -60,7 +60,7 @@
 * 研发新的ingress流量控制下发服务
 * 研发数据一致性检测的脚本和错误日志监控
 
-### 2013年五月 - 2016八月 (The Plant 中国杭州/日本东京)
+### 2013年5月 - 2016年8月 (The Plant 中国杭州/日本东京)
 
 * 职位：研发工程师
 * 公司规模：50+
@@ -69,20 +69,20 @@
 主要经验:
 
 * 研发和维护了两个电子商务相关的项目
-  * 调研和实现了一个3D bin packing算法，自动化了打包
+  * 调研和实现了一个[3D Bin Packing](https://github.com/bom-d-van/binpacking)算法，自动化了打包成本计算
   * 集成基于Mahout的产品推荐算法
   * 对GMO和Stripe的订单和支付系统的集成
   * 用户注册登陆，产品管理模块的研发
   * 生产系统的内存泄露问题的调查和解决
   * 单元测试和集成测试
   * 基于React的前端开发
-* 办公写作系统Qortex的部分功能的开发
+* 办公协作系统Qortex的部分功能的开发
   * 基于Virtual Box的企业版系统的打包和部署的自动化
   * 开发和部署的自动化
   * 基于SMTP和Beanstalkd的邮件系统的集成和处理
   * 基于Ejabberd聊天子系统的集成和开发
 
-### 2010五月 - 2013二月 (惠州大学Wando实验室)
+### 2010年5月 - 2013年2月 (惠州学院Wando实验室)
 
 参与两个ERP系统的设计和研发。主要技术栈是Ruby on Rails和ExtJS。
 
