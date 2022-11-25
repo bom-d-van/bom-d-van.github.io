@@ -35,9 +35,6 @@ Achievements:
   * Scaling the API backend to support high concurrency and high availability
   * Define and implement SLI and SLO metrics, including Availability, Propagation Latency, Error Rate, Request distributions across different backends and roles, etc.
   * Optimize Perl clients
-* Scaling large scale distributed config management system
-  * Scale the API backend to support 60k endpoints
-  * Define and implement SLI and SLO for monitoring propagation latencies, usage and scale RPS on a per role basis.
 * Site Reliability Engineering
   * Maintain multiple medium and small backend roles (servers ranging from 10 to 100s), debug production issues and being on-call.
   * Design and implement an internal auto-capacity testing system targeting envoy based systems by interacting with an internal control plane API.
