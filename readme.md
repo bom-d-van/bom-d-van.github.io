@@ -10,7 +10,7 @@ Handles:
 * [LinkedIn](https://www.linkedin.com/in/xiaofan-hu-9616372a/)
 * [Goodreads](https://www.goodreads.com/user/show/6544163-xiaofan-hu)
 
-About me: I'm a software developer who started my career from web development and continues the journey into an occassional kernel source code reader. And I like solving hard real world problems.
+About me: I'm a software developer with experiences of web development, system programming, time series database optimization and development, SRE, a few more other things. I like solving hard real-world problems.
 
 Skill keywords: Go, C/C++, Bash, Linux, Perl, Rust, JS, Web Development, Time Series DB, etc.
 
