@@ -22,7 +22,7 @@
 
 * 职位：研发工程师/高级研发工程师
 * 公司规模：2000+研发/10000+非研发
-* 技术栈: Time Series Database, Go, Perl, Large Scale Distributed Systems, Site Reliability Engineering, Kubernetes, Helm, System Programming, Ansible, Puppet, Java
+* 技术栈: Time Series Database, Go, Perl, C, Large Scale Distributed Systems, Site Reliability Engineering, Kubernetes, Helm, System Programming, Ansible, Puppet, Java
 
 主要经验:
 
@@ -41,7 +41,7 @@
 * Site Reliability Engineering
   * 运维管理多个中小型后端系统(规模从10到100多台服务器)，debug和oncall各种生产环境问题
   * 实现了针对公司内部envoy控制面的自动压测系统
-  * 实现了uwsgi上超时回调机制用于收集线上系统[Graceful Harakiri](https://github.com/unbit/uwsgi/pull/2212)
+  * 实现了uwsgi上超时回调机制用于收集线上系统异常时间和日志：[Graceful Harakiri](https://github.com/unbit/uwsgi/pull/2212)
   * 研发和使用EBPF工具debug[在线上产系统问题](https://www.xhu.buzz/bpftrace/debug_osq_lock.html)
   * Debug和解决了Hashicorp Vault生产系统的[存储泄漏的Bug](https://github.com/hashicorp/vault/issues/11178)
 * 研发和拓展新fast partner signup channel
@@ -69,7 +69,7 @@
 主要经验:
 
 * 研发和维护了两个电子商务相关的项目
-  * 调研和实现了一个[3D Bin Packing](https://github.com/bom-d-van/binpacking)算法，自动化了打包成本计算
+  * 调研和实现了一个[3D Bin Packing](https://github.com/bom-d-van/binpacking)算法，自动化了打包成本计算并优于人工结果
   * 集成基于Mahout的产品推荐算法
   * 对GMO和Stripe的订单和支付系统的集成
   * 用户注册登陆，产品管理模块的研发

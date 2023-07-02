@@ -15,6 +15,24 @@ My current focus is in highly available infrastructure services, distributed sys
 * Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
 * Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
+## September 2022 - June 2023 (Deeproute.ai Shenzhen, China)
+
+* Title: Senior Developer
+* Company scale: 500+
+* Tech: Go, Kubernetes, Traefik, External-DNS/dnscmd, PKCS11, OpenTelemetry, Salt, Terraform, MAAS, AliCloud
+
+Achievements:
+
+* Integrated Kubernetes Ingress DNS name registration in Private DNS server
+  * Implemented a dns server (as the rfc2136 provider for external-dns) running on a windows DNS server
+  * Implemented a terraform provider for IAC management
+* Implemented the infra IAC logics using saltstack for managing both on-board systems on autonomous vehicles and servers
+* Extended the MAAS terraform provider to improve our internal IAC management process.
+* Implemented microservice traffic routing (dabbed as "swimlane") using traefik IngressRoute on Kubernetes.
+* SRE duty: firefighting, server management, etc.
+  * Identified and resolved a networking issues between 2 kubernetes clusters (traced down packets being dropped on the client side due to NIC firmware bugs)
+  * Debugged latency and connectivity issues of artifact repository tools like nexus and harbor
+
 ## October 2017 - July 2022 (Booking.com Amsterdam, Netherlands)
 
 * Title: Developer/Senior Developer
