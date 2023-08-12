@@ -33,3 +33,19 @@ PKCS11
 * [OpenSSL Essentials: Working with SSL Certificates, Private Keys and CSRs | DigitalOcean](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs)
 
 * [Create the root pair — OpenSSL CA documentation](https://openssl-ca.readthedocs.io/en/latest/create-the-root-pair.html)
+
+* [salrashid123/mtls_pkcs11: mTLS with PKCS11 keys](https://github.com/salrashid123/mtls_pkcs11/tree/main)
+
+* [danni/python-pkcs11: PKCS#11/Cryptoki support for Python](https://github.com/danni/python-pkcs11)
+
+* [A dive into SoftHSM. A Hardware Secure Module (HSM) is a… | by Clyde D'Cruz | Medium](https://clydedcruz.medium.com/a-dive-into-softhsm-e4be3e70c7bc)
+
+* [cloudflare/gokeyless: Go implementation of the keyless protocol](https://github.com/cloudflare/gokeyless)
+* [PKCS11-authenticated TLS socket proxy](https://gist.github.com/korc/48b183723eecf5d1537e4822e6ca57b5)
+* [Simulated Hardware Security Module | Alexa Voice Service](https://developer.amazon.com/ar-SA/docs/alexa/avs-device-sdk-1-2x/hardware-security-module.html)
+
+* [doc/arm/pkcs11.rst · 5b0340a0aa3ca0ef7259901cd6722be970a8c119 · ISC Open Source Projects / BIND · GitLab](https://gitlab.isc.org/isc-projects/bind9/blob/5b0340a0aa3ca0ef7259901cd6722be970a8c119/doc/arm/pkcs11.rst)
+
+* [Generate RSA, ECC and AES keys with OpenSC pkcs11-tool » Verschlüsselt.IT](https://xn--verschlsselt-jlb.it/generate-rsa-ecc-and-aes-keys-with-opensc-pkcs11-tool/)
+
+* [ThalesIgnite/crypto11: Implement crypto.Signer and crypto.Decrypter for HSM-protected keys via PKCS#11](https://github.com/thalesignite/crypto11)

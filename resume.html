@@ -30,6 +30,40 @@
     SRE, uWSGI, Puppet, Protobuf/GRPC,
     ReactJS/jQuery/Backbone/ExtJS/etc.</li>
     </ul>
+    <h2 id="september-2022---now-deeproute.ai-shenzhen-china">September
+    2022 - Now (Deeproute.ai Shenzhen, China)</h2>
+    <ul>
+    <li>Title: Senior Developer</li>
+    <li>Company scale: 500+</li>
+    <li>Tech: Go, Kubernetes, Traefik, External-DNS/dnscmd, PKCS11,
+    OpenTelemetry, Salt, Terraform, MAAS, AliCloud</li>
+    </ul>
+    <p>Achievements:</p>
+    <ul>
+    <li>Integrated Kubernetes Ingress DNS name registration in Private
+    DNS server
+    <ul>
+    <li>Implemented a dns server (as the rfc2136 provider for
+    external-dns) running on a windows DNS server</li>
+    <li>Implemented a terraform provider for IAC management</li>
+    </ul></li>
+    <li>Implemented the infra IAC logics using saltstack for managing
+    both on-board systems on autonomous vehicles and servers</li>
+    <li>Extended the MAAS terraform provider to improve our internal IAC
+    management process.</li>
+    <li>Implemented microservice traffic routing (dabbed as “swimlane”)
+    using traefik IngressRoute on Kubernetes.</li>
+    <li>Implemented a MTLS proxy daemon, root and device certificate
+    protection using nvpkcs11.</li>
+    <li>SRE duty: firefighting, server management, etc.
+    <ul>
+    <li>Identified and resolved a networking issues between 2 kubernetes
+    clusters (traced down packets being dropped on the client side due
+    to NIC firmware bugs)</li>
+    <li>Debugged latency and connectivity issues of artifact repository
+    tools like nexus and harbor</li>
+    </ul></li>
+    </ul>
     <h2
     id="october-2017---july-2022-booking.com-amsterdam-netherlands">October
     2017 - July 2022 (Booking.com Amsterdam, Netherlands)</h2>
@@ -83,12 +117,6 @@
     Availability, Propagation Latency, Error Rate, Request distributions
     across different backends and roles, etc.</li>
     <li>Optimize Perl clients</li>
-    </ul></li>
-    <li>Scaling large scale distributed config management system
-    <ul>
-    <li>Scale the API backend to support 60k endpoints</li>
-    <li>Define and implement SLI and SLO for monitoring propagation
-    latencies, usage and scale RPS on a per role basis.</li>
     </ul></li>
     <li>Site Reliability Engineering
     <ul>

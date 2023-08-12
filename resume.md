@@ -8,14 +8,12 @@
 * GitHub: https://github.com/bom-d-van
 * Blog: https://www.xhu.buzz/
 
-I have almost 10 years of experience being a software engineer, covering from front end all the way to the back end systems and am familiar with scaling and developing highly concurrent, highly available distributed systems.
-
-My current focus is in highly available infrastructure services, distributed systems, database kernel development (both TSDB and general), and system programming.
+I'm seasoned and humbled software developer, with extensive experiences and skills of building systems (be it web applications or system toolings). I like solving hard problems and I enjoy meaningful works. I'm easy to talk to, extremely communicative, and supportive of colleagues and company strategies.
 
 * Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
 * Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
-## September 2022 - June 2023 (Deeproute.ai Shenzhen, China)
+## September 2022 - Now (Deeproute.ai Shenzhen, China)
 
 * Title: Senior Developer
 * Company scale: 500+
@@ -26,9 +24,11 @@ Achievements:
 * Integrated Kubernetes Ingress DNS name registration in Private DNS server
   * Implemented a dns server (as the rfc2136 provider for external-dns) running on a windows DNS server
   * Implemented a terraform provider for IAC management
+* Implemented infra and migrations logics of helm2 to helm3
 * Implemented the infra IAC logics using saltstack for managing both on-board systems on autonomous vehicles and servers
 * Extended the MAAS terraform provider to improve our internal IAC management process.
 * Implemented microservice traffic routing (dabbed as "swimlane") using traefik IngressRoute on Kubernetes.
+* Implemented a MTLS proxy daemon, root and device certificate protection using nvpkcs11.
 * SRE duty: firefighting, server management, etc.
   * Identified and resolved a networking issues between 2 kubernetes clusters (traced down packets being dropped on the client side due to NIC firmware bugs)
   * Debugged latency and connectivity issues of artifact repository tools like nexus and harbor
