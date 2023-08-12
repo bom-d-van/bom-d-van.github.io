@@ -1,4 +1,6 @@
 
+.PHONY: index.html
+
 all: index.html \
      bpftrace/go.html \
      bpftrace/debug_osq_lock.html \
