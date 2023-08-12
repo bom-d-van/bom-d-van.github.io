@@ -25,7 +25,7 @@
 </style>
 </head>
 
-<body class="container" style="padding: 0 0 50px 0">
+<body class="container" style="padding: 0 50px">
 <!-- <p>Date: </p> -->
 <header>
 <h1>
@@ -34,33 +34,61 @@
 </header>
 
 <!--  -->
-<h1 id="some-bpftrace-scripts-using-perldtrace">Some bpftrace scripts using perldtrace</h1>
+<h1 id="some-bpftrace-scripts-using-perldtrace">Some bpftrace scripts
+using perldtrace</h1>
 <p>Table of Contents</p>
 <ul>
 <li><a href="#common-pitfalls-caveats">Common pitfalls/caveats</a></li>
-<li><a href="#track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process">Track the 30 most frequent sub routine calls in the current most active uwsgi process</a></li>
-<li><a href="#get-wallclocks-of-all-subroutines-of-a-specific-module-package-in-the-current-most-active-uwsgi-process">Get wallclocks of all subroutines of a specific module/package in the current most active uwsgi process</a></li>
-<li><a href="#uwsgi-restart-packages-wallclocks">uwsgi restart: packages wallclocks</a></li>
-<li><a href="#uwsgi-restart-subroutine-wallclocks">uwsgi restart: subroutine wallclocks</a></li>
-<li><a href="#unwind-perl-stacktrace-on-kernel-events">Unwind perl stacktrace on kernel events</a></li>
-<li><a href="#using-uwsgi-request-on-new-request">Using uwsgi_request on new request</a></li>
+<li><a
+href="#track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process">Track
+the 30 most frequent sub routine calls in the current most active uwsgi
+process</a></li>
+<li><a
+href="#get-wallclocks-of-all-subroutines-of-a-specific-module-package-in-the-current-most-active-uwsgi-process">Get
+wallclocks of all subroutines of a specific module/package in the
+current most active uwsgi process</a></li>
+<li><a href="#uwsgi-restart-packages-wallclocks">uwsgi restart: packages
+wallclocks</a></li>
+<li><a href="#uwsgi-restart-subroutine-wallclocks">uwsgi restart:
+subroutine wallclocks</a></li>
+<li><a href="#unwind-perl-stacktrace-on-kernel-events">Unwind perl
+stacktrace on kernel events</a></li>
+<li><a href="#using-uwsgi-request-on-new-request">Using uwsgi_request on
+new request</a></li>
 <li><a href="#enabling-perldtrace">Enabling perldtrace</a></li>
 </ul>
-<p>These are a collection of bpftrace scritpts using <a href="https://perldoc.perl.org/perldtrace.html">perldtrace</a>, used in the context running perl app using uwsgi.</p>
-<h2 id="common-pitfallscaveats"><a href="#common-pitfalls-caveats">Common pitfalls/caveats</a></h2>
+<p>These are a collection of bpftrace scritpts using <a
+href="https://perldoc.perl.org/perldtrace.html">perldtrace</a>, used in
+the context running perl app using uwsgi.</p>
+<h2 id="common-pitfallscaveats"><a
+href="#common-pitfalls-caveats">Common pitfalls/caveats</a></h2>
 <ul>
 <li>Lost event and BPFTRACE_STRLEN</li>
 <li>The need of a pid and uwsgi multi-processes
 <ul>
-<li>Because there is a semaphore guarding the perl dtrace calls, we have to start bpftrace command per uwsgi process, which is basically the cpu core counts on the baremetal server</li>
+<li>Because there is a semaphore guarding the perl dtrace calls, we have
+to start bpftrace command per uwsgi process, which is basically the cpu
+core counts on the baremetal server</li>
 </ul></li>
-<li>Kernel version (4.19 works great, I had many pains in the beginning on 4.9 that I always avoid them)</li>
-<li>512 bytes of stack size limit, so sometimes we have to live with truncated string.</li>
-<li>Misaligned stack access off: there are many reasons causing this issue. When specifying <code>BPFTRACE_STRLEN</code>, it’s better to use values like <code>64 (int % 8 == 0)</code></li>
-<li><a href="https://github.com/Perl/perl5/blob/blead/mydtrace.h#L17"><code>sub__return/loading__file/loaded__file</code></a> is reusing <code>sub__entry</code>’s semaphore, which means we need an empty <code>sub__entry</code> probe even when tracing <code>sub__return/loading__file/loaded__file</code></li>
+<li>Kernel version (4.19 works great, I had many pains in the beginning
+on 4.9 that I always avoid them)</li>
+<li>512 bytes of stack size limit, so sometimes we have to live with
+truncated string.</li>
+<li>Misaligned stack access off: there are many reasons causing this
+issue. When specifying <code>BPFTRACE_STRLEN</code>, it’s better to use
+values like <code>64 (int % 8 == 0)</code></li>
+<li><a
+href="https://github.com/Perl/perl5/blob/blead/mydtrace.h#L17"><code>sub__return/loading__file/loaded__file</code></a>
+is reusing <code>sub__entry</code>’s semaphore, which means we need an
+empty <code>sub__entry</code> probe even when tracing
+<code>sub__return/loading__file/loaded__file</code></li>
 </ul>
 <p>Scripts/Examples</p>
-<h2 id="track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process"><a href="#track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process">Track the 30 most frequent sub routine calls in the current most active uwsgi process</a></h2>
+<h2
+id="track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process"><a
+href="#track-the-30-most-frequent-sub-routine-calls-in-the-current-most-active-uwsgi-process">Track
+the 30 most frequent sub routine calls in the current most active uwsgi
+process</a></h2>
 <pre><code>pid=`ps -eo pcpu,pid,cmd | grep uw[s]gi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
 
 BPFTRACE_STRLEN=256 sudo bpftrace -p $pid -e &#39;
@@ -107,7 +135,11 @@ usdt:/usr/lib64/libperl.so:sub__return {
 sleep 2
 
 done</code></pre>
-<h2 id="get-wallclocks-of-all-subroutines-of-a-specific-modulepackage-in-the-current-most-active-uwsgi-process"><a href="#get-wallclocks-of-all-subroutines-of-a-specific-module-package-in-the-current-most-active-uwsgi-process">Get wallclocks of all subroutines of a specific module/package in the current most active uwsgi process</a></h2>
+<h2
+id="get-wallclocks-of-all-subroutines-of-a-specific-modulepackage-in-the-current-most-active-uwsgi-process"><a
+href="#get-wallclocks-of-all-subroutines-of-a-specific-module-package-in-the-current-most-active-uwsgi-process">Get
+wallclocks of all subroutines of a specific module/package in the
+current most active uwsgi process</a></h2>
 <p>Using DBI as a example:</p>
 <pre><code>function clean_up {
     echo &#39;exit: sudo pkill bpftrace&#39;
@@ -150,7 +182,9 @@ END { clear(@start_ts); print(@latencies); clear(@latencies); }
 sleep 2
 
 done</code></pre>
-<h2 id="uwsgi-restart-packages-wallclocks"><a href="#uwsgi-restart-packages-wallclocks">uwsgi restart: packages wallclocks</a></h2>
+<h2 id="uwsgi-restart-packages-wallclocks"><a
+href="#uwsgi-restart-packages-wallclocks">uwsgi restart: packages
+wallclocks</a></h2>
 <pre><code>function clean_up {
     echo &#39;exit: sudo pkill bpftrace&#39;
     sudo pkill bpftrace
@@ -194,7 +228,9 @@ END { clear(@start_ts); print(@latencies); clear(@latencies); }
 &#39; &amp;&gt;&gt; uwsgi_restart_wallclock_by_package/&quot;$pid&quot; &amp;
 
 done</code></pre>
-<h2 id="uwsgi-restart-subroutine-wallclocks"><a href="#uwsgi-restart-subroutine-wallclocks">uwsgi restart: subroutine wallclocks</a></h2>
+<h2 id="uwsgi-restart-subroutine-wallclocks"><a
+href="#uwsgi-restart-subroutine-wallclocks">uwsgi restart: subroutine
+wallclocks</a></h2>
 <pre><code>function clean_up {
     echo &#39;exit: sudo pkill bpftrace&#39;
     sudo pkill bpftrace
@@ -233,7 +269,9 @@ END { clear(@start_ts); clear(@calls); clear(@latencies); }
 sleep 2
 
 done</code></pre>
-<h2 id="unwind-perl-stacktrace-on-kernel-events"><a href="#unwind-perl-stacktrace-on-kernel-events">Unwind perl stacktrace on kernel events</a></h2>
+<h2 id="unwind-perl-stacktrace-on-kernel-events"><a
+href="#unwind-perl-stacktrace-on-kernel-events">Unwind perl stacktrace
+on kernel events</a></h2>
 <p>osq_lock as example:</p>
 <pre><code>pid=`ps -eo pcpu,pid,cmd | grep uwsgi | sort -nr | sed &#39;s/^ \+//&#39; | sed &#39;s/ \+/ /&#39; | cut -d &#39; &#39; -f 2 | head -1`
 
@@ -278,7 +316,9 @@ kprobe:osq_lock {
 
 END { clear(@module); clear(@sub); clear(@line); }
 &#39;</code></pre>
-<h2 id="using-uwsgi_request-on-new-request"><a href="#using-uwsgi-request-on-new-request">Using uwsgi_request on new request</a></h2>
+<h2 id="using-uwsgi_request-on-new-request"><a
+href="#using-uwsgi-request-on-new-request">Using uwsgi_request on new
+request</a></h2>
 <pre><code>sudo bpftrace -e &#39;
 struct uwsgi_request {
     char padding[192];
@@ -291,9 +331,11 @@ uprobe:/usr/lib64/libperl.so:psgi_response {
     printf(&quot;%s\n&quot;, str(((uwsgi_request*)arg0)-&gt;uri));
 }
 &#39; -v</code></pre>
-<h2 id="enabling-perldtrace"><a href="#enabling-perldtrace">Enabling perldtrace</a></h2>
+<h2 id="enabling-perldtrace"><a href="#enabling-perldtrace">Enabling
+perldtrace</a></h2>
 <p>Some simple commands to install bpftrace:</p>
-<p>Note: make sure that your kernel is &gt;= 4.19. Things doesn’t work as smooth for lower kernel versions.</p>
+<p>Note: make sure that your kernel is &gt;= 4.19. Things doesn’t work
+as smooth for lower kernel versions.</p>
 <pre><code>sudo yum install bpftrace &quot;kernel-devel-uname-r == $(uname -r)&quot;</code></pre>
 </body>
 

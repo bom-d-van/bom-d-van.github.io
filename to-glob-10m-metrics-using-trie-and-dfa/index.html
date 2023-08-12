@@ -4,7 +4,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="date" content=''>
-<title>To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)</title>
+<title>To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the
+graphite storage node daemon)</title>
 <link rel="shortcut icon" href="favicon.ico" />
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
@@ -25,7 +26,7 @@
 </style>
 </head>
 
-<body class="container" style="padding: 0 0 50px 0">
+<body class="container" style="padding: 0 50px">
 <!-- <p>Date: </p> -->
 <header>
 <h1>
@@ -34,49 +35,98 @@
 </header>
 
 <!--  -->
-<h1 id="to-glob-10m-metrics-trie-dfa-tree²-for-go-carbon-the-graphite-storage-node-daemon">To glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage node daemon)</h1>
+<h1
+id="to-glob-10m-metrics-trie-dfa-tree²-for-go-carbon-the-graphite-storage-node-daemon">To
+glob 10M metrics: Trie * DFA = Tree² for Go-Carbon (the graphite storage
+node daemon)</h1>
 <p>(originally written at October 9, 2019)</p>
 <p>Table of Contents</p>
 <ul>
 <li><a href="#short-context">Short context</a></li>
 <li><a href="#live-test">Live test</a></li>
 <li><a href="#non-live-test">Non-Live Test</a></li>
-<li><a href="#the-problem-more-details">The problem (more details)</a></li>
+<li><a href="#the-problem-more-details">The problem (more
+details)</a></li>
 <li><a href="#how-trigram-index-works">How trigram index works</a></li>
-<li><a href="#how-trie-dfa-index-works">How trie+dfa index works</a></li>
+<li><a href="#how-trie-dfa-index-works">How trie+dfa index
+works</a></li>
 <li><a href="#pros">Pros</a></li>
 <li><a href="#cons">Cons</a></li>
 </ul>
-<p>TLDR: By combining Trie and DFA (inspired by Russ Cox’s “<a href="https://swtch.com/~rsc/regexp/regexp1.html">Regular Expression Matching Can Be Simple And Fast</a>” post) for indexing metric paths, letting two trees walking over each other, this new implementation halves the memory usage of go-carbon process (avg 57% less, from 20.5G to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5 of it with trigram index on go-carbon. This is making us a one step closer to having wholly cwhisper-powered clusters!</p>
+<p>TLDR: By combining Trie and DFA (inspired by Russ Cox’s “<a
+href="https://swtch.com/~rsc/regexp/regexp1.html">Regular Expression
+Matching Can Be Simple And Fast</a>” post) for indexing metric paths,
+letting two trees walking over each other, this new implementation
+halves the memory usage of go-carbon process (avg 57% less, from 20.5G
+to 8.8G) and reduces 99th percentile of render request time to 1/2 - 1/5
+of it with trigram index on go-carbon. This is making us a one step
+closer to having wholly cwhisper-powered clusters!</p>
 <h2 id="short-context"><a href="#short-context">Short context</a></h2>
-<p>Metrics are saved as files on go-carbon (one file per metric), the graphite storage daemon.</p>
-<p>When we make a query to Graphite, like general.tuning.minutely.sys_stats.{extranet,xydapi}.host.prod.<em>.</em>.stat.cpu.all.idle.mean, before go-carbon fetches data from file, go-carbon needs to figure out what files to read from. Using filepath.Glob (a golang stdlib function for globbing files) is getting expensive when you have millions of metrics (too many syscall). The current go-carbon is using trigram indexing with filepath.Glob as fallback for fetching, which also has performance issues when metrics number rise above 10 millions.</p>
-<p>So we develop this new algorithm by using trie and dfa that has shown good potential in our tests.</p>
+<p>Metrics are saved as files on go-carbon (one file per metric), the
+graphite storage daemon.</p>
+<p>When we make a query to Graphite, like
+general.tuning.minutely.sys_stats.{extranet,xydapi}.host.prod.<em>.</em>.stat.cpu.all.idle.mean,
+before go-carbon fetches data from file, go-carbon needs to figure out
+what files to read from. Using filepath.Glob (a golang stdlib function
+for globbing files) is getting expensive when you have millions of
+metrics (too many syscall). The current go-carbon is using trigram
+indexing with filepath.Glob as fallback for fetching, which also has
+performance issues when metrics number rise above 10 millions.</p>
+<p>So we develop this new algorithm by using trie and dfa that has shown
+good potential in our tests.</p>
 <h2 id="live-test"><a href="#live-test">Live test</a></h2>
 <p>Tested on a cwhisper cluster replica, with 9 servers in total</p>
 <ul>
 <li>Metrics count per node is ~3M</li>
-<li>5 nodes using trie+dfa, 4 nodes using trigram (graph below is using data of 4 nodes for each indexing type, i.e. the count of request should be the same)</li>
+<li>5 nodes using trie+dfa, 4 nodes using trigram (graph below is using
+data of 4 nodes for each indexing type, i.e. the count of request should
+be the same)</li>
 <li>With production traffic</li>
 </ul>
-<p>Displaying data bellow with histogram to show the advantage of the new implementation (With trie+dfa, most of the 99th percentile request time is under 50ms (it’s a histogram with x-axis being 99th request time in millisecond):</p>
+<p>Displaying data bellow with histogram to show the advantage of the
+new implementation (With trie+dfa, most of the 99th percentile request
+time is under 50ms (it’s a histogram with x-axis being 99th request time
+in millisecond):</p>
 <p><img src="images/image4.jpg" /></p>
 <h2 id="non-live-test"><a href="#non-live-test">Non-Live Test</a></h2>
-<p>With queries and metric names collected from production, displaying data bellow with histogram to show the advantage of the new implementation:</p>
+<p>With queries and metric names collected from production, displaying
+data bellow with histogram to show the advantage of the new
+implementation:</p>
 <p><img src="images/image3.jpg" /></p>
-<p>From the non-live test, we could see that trigram index is able to finish 57% of the queries under 100us, but has a longer tail, comparing to Trie+DFA.</p>
-<h2 id="the-problem-more-details"><a href="#the-problem-more-details">The problem (more details)</a></h2>
-<p>In our previous test of cwhisper (a compressed version of file format for storing Graphite metrics) on one of our graphite clusters, Alexey Zhiltsov noticed that 99th percentile of request time on cwhisper nodes (5M - 6M metrics per node) were worse than whisper clusters, because of higher number of metrics served per box. And cwhisper makes it feasible for us to serve 10M metrics per box. So speeding up the request would make cwhisper deployment even more attractive.</p>
-<p>Then we started a discussion from which I learnt about some of the drawbacks of the current indexing implementation trigram:</p>
+<p>From the non-live test, we could see that trigram index is able to
+finish 57% of the queries under 100us, but has a longer tail, comparing
+to Trie+DFA.</p>
+<h2 id="the-problem-more-details"><a
+href="#the-problem-more-details">The problem (more details)</a></h2>
+<p>In our previous test of cwhisper (a compressed version of file format
+for storing Graphite metrics) on one of our graphite clusters, Alexey
+Zhiltsov noticed that 99th percentile of request time on cwhisper nodes
+(5M - 6M metrics per node) were worse than whisper clusters, because of
+higher number of metrics served per box. And cwhisper makes it feasible
+for us to serve 10M metrics per box. So speeding up the request would
+make cwhisper deployment even more attractive.</p>
+<p>Then we started a discussion from which I learnt about some of the
+drawbacks of the current indexing implementation trigram:</p>
 <ul>
 <li>https://github.com/lomik/go-carbon/issues/202</li>
 <li>https://github.com/lomik/go-carbon/issues/301</li>
 </ul>
-<p>Therefore, I started an attempt to try out some “new” ideas, which ended up leading me to the new implementation of combining trie and DFA.</p>
-<h2 id="how-trigram-index-works"><a href="#how-trigram-index-works">How trigram index works</a></h2>
-<p>This index is implemented by ex-Bookinger Damian Gryski, to make an unfairly simple explanation (because it’s a post about the new index ;) ): it works by generating trigrams from a metric path and then using them to build an inverted index (trigrams -&gt; metric paths). When querying is sent to go-carbon, it would also generate trigrams based on the queries, and then intersect both sets of trigrams to filter out metrics.</p>
-<h2 id="how-triedfa-index-works"><a href="#how-trie-dfa-index-works">How trie+dfa index works</a></h2>
-<p>A “very inaccurate” description of the algorithm (reading source code is better):</p>
+<p>Therefore, I started an attempt to try out some “new” ideas, which
+ended up leading me to the new implementation of combining trie and
+DFA.</p>
+<h2 id="how-trigram-index-works"><a href="#how-trigram-index-works">How
+trigram index works</a></h2>
+<p>This index is implemented by ex-Bookinger Damian Gryski, to make an
+unfairly simple explanation (because it’s a post about the new index ;)
+): it works by generating trigrams from a metric path and then using
+them to build an inverted index (trigrams -&gt; metric paths). When
+querying is sent to go-carbon, it would also generate trigrams based on
+the queries, and then intersect both sets of trigrams to filter out
+metrics.</p>
+<h2 id="how-triedfa-index-works"><a href="#how-trie-dfa-index-works">How
+trie+dfa index works</a></h2>
+<p>A “very inaccurate” description of the algorithm (reading source code
+is better):</p>
 <pre><code>1. Metric paths saved on go-carbon are indexed using compact trie (key for space efficiency)
 2. Queries are broken down into multiple NFA by &quot;.&quot; (e.g.: abc.efg*.xyz -&gt; abc$, efg*$, xyz$)
 3. Generating DFA while depth-first walking on the trie generated in #1 (current trie node is the root)
@@ -90,11 +140,16 @@
   e. Continue to next children if there is, otherwise pop DFA state and trie node off the stack. Exit if all is empty.</code></pre>
 <p>The main data structures:</p>
 <ul>
-<li>Trie (static and being replaced until next full disk scan every $configurable minutes)</li>
-<li>An array of NFA states and a stack of DFA states (generated on every query) (The DFA implementation is mainly inspired/copied/modified from Russ Cox’s post here: https://swtch.com/~rsc/regexp/regexp1.html)</li>
+<li>Trie (static and being replaced until next full disk scan every
+$configurable minutes)</li>
+<li>An array of NFA states and a stack of DFA states (generated on every
+query) (The DFA implementation is mainly inspired/copied/modified from
+Russ Cox’s post here: https://swtch.com/~rsc/regexp/regexp1.html)</li>
 </ul>
-<p>A simple and also not so accurate illustration of the metric trie tree, NFA&amp;DFA:</p>
-<p>A NFA for the second node of query sys.{,*[0-9]}app{m,r,}db-**_{prod,dev}_svc.mysql:</p>
+<p>A simple and also not so accurate illustration of the metric trie
+tree, NFA&amp;DFA:</p>
+<p>A NFA for the second node of query
+sys.{,*[0-9]}app{m,r,}db-**_{prod,dev}_svc.mysql:</p>
 <p><img src="images/image5.png" /></p>
 <p>A Trie sample with a DFA stack annotation:</p>
 <p><img src="images/image1.png" /></p>
@@ -109,11 +164,18 @@
 </ul>
 <h2 id="cons"><a href="#cons">Cons</a></h2>
 <ul>
-<li>Some queries with leading star in queries might be slowed down (from milliseconds to seconds), example:</li>
+<li>Some queries with leading star in queries might be slowed down (from
+milliseconds to seconds), example:</li>
 </ul>
 <pre><code>svc.group.*.*.haproxy.server.*app-*_prod.weight (notice *bookadmin part)</code></pre>
-<p>Solution to this issue is either take the hit as long as the slow down isn’t too bad or rewrite the query to make it performant if possible (by removing the leading star with {}; for instance, the example query could be rewritten as: `<code>svc.group.*.*.haproxy.server.{,pre1,pre2}app-*_prod.weight</code>).</p>
-<p>Full pull request is here if you are interested in all the details: <a href="https://github.com/lomik/go-carbon/pull/303/files">https://github.com/lomik/go-carbon/pull/303/files</a></p>
+<p>Solution to this issue is either take the hit as long as the slow
+down isn’t too bad or rewrite the query to make it performant if
+possible (by removing the leading star with {}; for instance, the
+example query could be rewritten as:
+`<code>svc.group.*.*.haproxy.server.{,pre1,pre2}app-*_prod.weight</code>).</p>
+<p>Full pull request is here if you are interested in all the details:
+<a
+href="https://github.com/lomik/go-carbon/pull/303/files">https://github.com/lomik/go-carbon/pull/303/files</a></p>
 </body>
 
 </html>

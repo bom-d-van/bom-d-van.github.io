@@ -1,5 +1,5 @@
 
-.PHONY: index.html
+.PHONY: index.html bpftrace/go.html bpftrace/debug_osq_lock.html bpftrace/perldtrace.html to-glob-10m-metrics-using-trie-and-dfa/index.html how-to-shrink-whisper-files/index.html ctrie/ctrie.ht
 
 all: index.html \
      bpftrace/go.html \
