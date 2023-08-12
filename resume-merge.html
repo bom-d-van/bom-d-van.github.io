@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="date" content=''>
+    <title>resume</title>
+</head>
+<body>
+    <h1 id="胡小帆简历">胡小帆简历</h1>
+    <h2 id="基本信息">基本信息</h2>
+    <ul>
+    <li>姓名：胡小帆</li>
+    <li>邮箱：xiaofan.xhu@gmail.com</li>
+    <li>电话：+86 15224019502</li>
+    <li>GitHub: https://github.com/bom-d-van</li>
+    <li>博客： https://www.xhu.buzz/</li>
+    </ul>
+    <p>近十年的互联网工作经验，涵盖了前中后端，高可用，高流量分布式系统的开发和维护。</p>
+    <p>目前工作重心主要放在高可用基础架构服务，分布式系统，数据库内核开发，和系统编程。</p>
+    <ul>
+    <li>编程语言：Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.</li>
+    <li>相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.</li>
+    </ul>
+    <h2 id="主要工作经验">主要工作经验</h2>
+    <h3 id="年10月---2022年7月-booking.com-荷兰阿姆斯特丹">2017年10月 - 2022年7月 (Booking.com 荷兰阿姆斯特丹)</h3>
+    <ul>
+    <li>职位：研发工程师/高级研发工程师</li>
+    <li>公司规模：2000研发/1万多非研发</li>
+    <li>技术栈: Time Series Database, Go, Perl, Large Scale Distributed Systems, Site Reliability Engineering, Kubernetes, Helm, System Programming, Ansible, Puppet, Java</li>
+    </ul>
+    <p>主要经验:</p>
+    <ul>
+    <li>研发和维护高可用大型分布式时序数据库Go-Graphite（存储和查询方向）
+    <ul>
+    <li>规模：1千多台服务器，PB级SSD数据量，5亿Unique Metrics，2kQPS，3千万data point每秒的Ingestion数据量</li>
+    <li>设计和实现了基于<a href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Facebook的Gorilla论文</a>中描述的Gorilla<a href="https://www.xhu.buzz/how-to-shrink-whisper-files/">时序数据压缩算法的新存储文件结构</a>，达到了30%-70%的压缩率。</li>
+    <li>设计和实现了基于Russ Cox的DFA算法的<a href="https://www.xhu.buzz/to-glob-10m-metrics-using-trie-and-dfa/">Globbing查询算法的前缀树索引</a>，实现了高性能的索引效率和低延迟的查询，支持单台服务器高效索引10-40 Millions Metrics。</li>
+    <li>设计和实现了<a href="https://www.xhu.buzz/ctrie/ctrie.html">Lockless and concurrent 前缀树索引</a>，减少了数据库内存消耗，支持实时索引新数据</li>
+    <li>设计和实现了高性能的<a href="https://github.com/go-graphite/go-carbon/pull/420">Quota子系统</a>，减少了多租户系统中的Noisy Neighbour和实现有效资源管理和控制</li>
+    </ul></li>
+    <li>扩展和维护高可用配置分发系统 (Scaling large scale distributed config management system)
+    <ul>
+    <li>规模：8k RPS, 支持1300多个后端系统和6万多个客户端</li>
+    <li>拓展API后端支持高并发和高可用</li>
+    <li>定义和实行SLI和SLO，包括Availability, Propagation Latency, Error Rate, 后端系统请求分布情况等</li>
+    <li>优化Perl客户端</li>
+    </ul></li>
+    <li>Site Reliability Engineering
+    <ul>
+    <li>运维管理多个中小型后端系统(规模从10到100多台服务器)，debug和oncall各种生产环境问题</li>
+    <li>实现了针对公司内部envoy控制面的自动压测系统</li>
+    <li>实现了uwsgi上超时回调机制用于收集线上系统<a href="https://github.com/unbit/uwsgi/pull/2212">Graceful Harakiri</a></li>
+    <li>研发和使用EBPF工具debug<a href="https://www.xhu.buzz/bpftrace/debug_osq_lock.html">在线上产系统问题</a></li>
+    <li>Debug和解决了Hashicorp Vault生产系统的<a href="https://github.com/hashicorp/vault/issues/11178">存储泄漏的Bug</a></li>
+    </ul></li>
+    <li>研发和拓展新fast partner signup channel</li>
+    </ul>
+    <h3 id="年九月---2017八月-ucloud-中国上海">2016年九月 - 2017八月 (UCloud 中国上海)</h3>
+    <ul>
+    <li>职位：研发工程师</li>
+    <li>公司规模：500+</li>
+    <li>技术栈: Go, Bash, C++, Linux, TC, Networking, DPDK</li>
+    </ul>
+    <p>主要经验:</p>
+    <ul>
+    <li>维护和研发公司云平台的基于Linux tc的流量控制系统。</li>
+    <li>研发了带宽操作的对账系统。</li>
+    <li>使用Quagga和Keepalived实现了Redis的跨机房高可用</li>
+    <li>研发新的ingress流量控制下发服务</li>
+    <li>研发数据一致性检测的脚本和错误日志监控</li>
+    </ul>
+    <h3 id="年五月---2016八月-the-plant-中国杭州日本东京">2013年五月 - 2016八月 (The Plant 中国杭州/日本东京)</h3>
+    <ul>
+    <li>职位：研发工程师</li>
+    <li>公司规模：50+</li>
+    <li>技术栈: Go, Bash, Ruby on Rails, Linux</li>
+    </ul>
+    <p>主要经验:</p>
+    <ul>
+    <li>研发和维护了两个电子商务相关的项目
+    <ul>
+    <li>调研和实现了一个3D bin packing算法，自动化了打包</li>
+    <li>集成基于Mahout的产品推荐算法</li>
+    <li>对GMO和Stripe的订单和支付系统的集成</li>
+    <li>用户注册登陆，产品管理模块的研发</li>
+    <li>生产系统的内存泄露问题的调查和解决</li>
+    <li>单元测试和集成测试</li>
+    <li>基于React的前端开发</li>
+    </ul></li>
+    <li>办公写作系统Qortex的部分功能的开发
+    <ul>
+    <li>基于Virtual Box的企业版系统的打包和部署的自动化</li>
+    <li>开发和部署的自动化</li>
+    <li>基于SMTP和Beanstalkd的邮件系统的集成和处理</li>
+    <li>基于Ejabberd聊天子系统的集成和开发</li>
+    </ul></li>
+    </ul>
+    <h3 id="五月---2013二月-惠州大学wando实验室">2010五月 - 2013二月 (惠州大学Wando实验室)</h3>
+    <p>参与两个ERP系统的设计和研发。主要技术栈是Ruby on Rails和ExtJS。</p>
+    <h2 id="开源项目">开源项目</h2>
+    <ul>
+    <li><a href="https://github.com/go-graphite/go-carbon">Go-Carbon</a>: Graphite Storage in Go.</li>
+    <li><a href="https://github.com/bom-d-van/harp">Harp</a>: A Go application deployment tool.</li>
+    <li><a href="https://github.com/bom-d-van/binpacking">3D Bin Packing</a>: A Golang 3D Bin Packing Implementation</li>
+    <li><a href="https://github.com/theplant/assettube">AssetTube</a>: A tool for fingerprinting and serving asset files for Go Web applications.</li>
+    <li><a href="https://github.com/bom-d-van/chttp">CHTTP</a>: A stupid and incomplete http/http2 C implementation, built for learning C.</li>
+    <li><a href="https://github.com/bom-d-van/plperf">plperf</a>: A tracing program for uwsgi+perl environment, using ebpf and perl dtrace, in Go.</li>
+    <li><a href="https://github.com/theplant/pak">Pak</a>: A Go package version management tool.</li>
+    </ul>
+
+    <p style="page-break-before:always;"></p>
+
+    <h1 id="xiaofan-hus-resume">Xiaofan Hu’s Resume</h1>
+    <h2 id="summary">Summary</h2>
+    <ul>
+    <li>Name: Xiaofan Hu</li>
+    <li>Email: xiaofan.xhu@gmail.com</li>
+    <li>Phone: +86 15224019502</li>
+    <li>GitHub: https://github.com/bom-d-van</li>
+    <li>Blog: https://www.xhu.buzz/</li>
+    </ul>
+    <p>I have almost 10 years of experiences being a software engineer, covering from front end all the way to the back end systems and are familiar with scaling and developing highly concurrent, highly available distributed systems.</p>
+    <p>My current focus in mainly in high available infrastructure, distributed systems, database kernel development, and system programming.</p>
+    <ul>
+    <li>Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.</li>
+    <li>Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Redis, Ruby on Rails, EBPF, SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.</li>
+    </ul>
+    <h2 id="october-2017---july-2022-booking.com-amsterdam">October 2017 - July 2022 (Booking.com Amsterdam)</h2>
+    <ul>
+    <li>Title: Developer/Senior Developer</li>
+    <li>Company scale: 2000 Tech/10,000+ Total</li>
+    <li>Tech: Time Series Database, Go, Perl, Large Scale Distributed Systems, Site Reliability Engineering, Kubernetes, Helm, System Programming, Ansible, Puppet, Java</li>
+    </ul>
+    <p>Achievements:</p>
+    <ul>
+    <li>Scaling large scale distributed time series systems (Graphite)
+    <ul>
+    <li>Scale: over 1k servers, over 1 PB SSD storage, 500 million uniq metrics, 2k QPS, 30m data points per second on ingestion.</li>
+    <li>By adopting <a href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Facebook Gorilla compression algorithm</a>, design and implement a new file format for compression that reduces disk space usage from 30% - 70%.</li>
+    <li>Design and implementing a new index algorithm by using <a href="https://swtch.com/~rsc/regexp/regexp1.html">NFA+DFA algorithms introduced by Russ Cox</a> that is able to support 10 - 40 millions uniq metric paths with low indexing overhead and low tail latencies.</li>
+    <li>Introducing a quota subsystem for reliability and control that are able efficiently</li>
+    <li>Design and implement a <a href="https://www.xhu.buzz/ctrie/ctrie.html">lockless and concurrent trie indexing</a> that were able to reduce memory usage and supports real time indexing</li>
+    <li>Design and implement a higher performant <a href="https://github.com/go-graphite/go-carbon/pull/420">Quota subsystems</a> that able to reduce the noisy neighbor effect in a multi-tenant environment and achieves efficient resource management and control</li>
+    </ul></li>
+    <li>Scaling and maintaining a large scale distributed config management system
+    <ul>
+    <li>Scale: 8k RPS, over 1300 backend systems and over 60k end points</li>
+    <li>Scaling the API backend to support high concurrency and high availability</li>
+    <li>Define and implement SLI and SLO metrics, including Availability, Propagation Latency, Error Rate, Request distributions across different backends and roles, etc.</li>
+    <li>Optimize Perl clients</li>
+    </ul></li>
+    <li>Scaling large scale distributed config management system
+    <ul>
+    <li>Scale the API backend to support 60k endpoints</li>
+    <li>Define and implement SLI and SLO for monitoring propagation latencies, usage and scale RPS on a per role basis.</li>
+    </ul></li>
+    <li>Site Reliability Engineering
+    <ul>
+    <li>Maintain multiple medium and small backend roles (servers ranging from 10 to 100s), debug production issues and being on-call.</li>
+    <li>Design and implement an internal auto-capacity testing system targeting envoy based systems by interacting with an internal control plane API.</li>
+    <li>Design and implement an uWSGI timeout callback mechanism for logging automation that’s called <a href="https://github.com/unbit/uwsgi/pull/2212">Graceful Harakiri</a></li>
+    <li>Research and implement EBPF based tooling for <a href="https://www.xhu.buzz/bpftrace/debug_osq_lock.html">debugging production issues</a></li>
+    <li>Debug and resolve a <a href="https://github.com/hashicorp/vault/issues/11178">storage leakage Bug</a> in Hashicorp Vault production system.</li>
+    </ul></li>
+    <li>Develop and scale a new fast partner signup channel/product.</li>
+    </ul>
+    <h2 id="september-2016---august-2017-ucloud-shanghai">September 2016 - August 2017 (UCloud Shanghai)</h2>
+    <ul>
+    <li>Title: Web Development Engineer</li>
+    <li>Company scale: 500+</li>
+    <li>Tech: Go, Bash, C++, Linux, TC, Networking, DPDK</li>
+    </ul>
+    <p>Achievements:</p>
+    <p>Maintain and develop the traffic control system which is an important part of networking control, using C++, Go, Bash etc. Responsibilities and Experiences included:</p>
+    <ul>
+    <li>Develop an accounting system for bandwidth usage monitoring and operations</li>
+    <li>Use Quagga and Keepalived to implement Redis high availability across different data centers in the same region</li>
+    <li>Develop new ingress traffic control feature in</li>
+    <li>System problems on-call, writing up scripts for data consistency checking and log error monitoring</li>
+    </ul>
+    <h2 id="may-2013---august-2016-the-plant-hangzhoutokyo">May 2013 - August 2016 (The Plant Hangzhou/Tokyo)</h2>
+    <ul>
+    <li>Title: Developer</li>
+    <li>Company scale: 50+</li>
+    <li>Tech: Go, Bash, Ruby on Rails, Linux</li>
+    </ul>
+    <p>Achievements:</p>
+    <ul>
+    <li>Mainly Worked and maintained two EC projects in Go and a few other smallish projects like product recommendations (by using Mahout), and a react project. Responsibilities and Experiences included:
+    <ul>
+    <li>3D bin packing algorithm</li>
+    <li>Order and Payment(first GMO, then migrated to Stripe) User register/login, products management</li>
+    <li>Memory leak problem fixes</li>
+    <li>Unit/Integration tests</li>
+    <li>System deployment and maintenance etc</li>
+    </ul></li>
+    <li>Worked on Qortex, a communication web application designed and made for high performance teams. Experiences and Personal highlights included:
+    <ul>
+    <li>VirtualBox Packaging with auto-updates support for Enterprise users Go package management (Pak)</li>
+    <li>Deployment/migration automation script (developed later into Harp) Email processing/sending (Beanstalkd, SMTP)</li>
+    <li>Chatting (Ejabberd Integration) API maintenance</li>
+    </ul></li>
+    </ul>
+    <h2 id="may-2010---feb-2013-student-developer-in-wando-lab-huizhou-university">May 2010 - Feb 2013 Student Developer in Wando Lab, HuiZhou University</h2>
+    <p>Involved in the design and development of two ERP (Enterprise Resource Planning) systems in RoR and Ext JS. It’s a great learning experience and an excellent environment for helping improve programming and collaboration skills.</p>
+    <h2 id="open-source-projects">Open Source Projects</h2>
+    <ul>
+    <li><a href="https://github.com/go-graphite/go-carbon">Go-Carbon</a>: Graphite Storage in Go.</li>
+    <li><a href="https://github.com/bom-d-van/harp">Harp</a>: A Go application deployment tool.</li>
+    <li><a href="https://github.com/bom-d-van/binpacking">3D Bin Packing</a>: A Golang 3D Bin Packing Implementation</li>
+    <li><a href="https://github.com/theplant/assettube">AssetTube</a>: A tool for fingerprinting and serving asset files for Go Web applications.</li>
+    <li><a href="https://github.com/bom-d-van/chttp">CHTTP</a>: A stupid and incomplete http/http2 C implementation, built for learning C.</li>
+    <li><a href="https://github.com/bom-d-van/plperf">plperf</a>: A tracing program for uwsgi+perl environment, using ebpf and perl dtrace, in Go.</li>
+    <li><a href="https://github.com/theplant/pak">Pak</a>: A Go package version management tool.</li>
+    </ul>
+</body>
+</html>

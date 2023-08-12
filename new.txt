@@ -1,0 +1,5 @@
+BenchmarkRendersStorm/BenchmarkRendersStorm/ReplicaMatchMode-normalWithExactEqCheck-8         	       1	6213874116 ns/op
+BenchmarkRendersStorm/BenchmarkRendersStorm/ReplicaMatchMode-checkWithExactEqCheck-8          	       1	7012712732 ns/op
+BenchmarkRendersStorm/BenchmarkRendersStorm/ReplicaMatchMode-checkWithApproximateEqCheck-8    	       1	10050420245 ns/op
+BenchmarkRendersStorm/BenchmarkRendersStorm/ReplicaMatchMode-majorityWithExactEqCheck-8       	       1	20160802573 ns/op
+BenchmarkRendersStorm/BenchmarkRendersStorm/ReplicaMatchMode-majorityWithApproximateEqCheck-8 	       1	31473745254 ns/op

@@ -1,0 +1,184 @@
+<h1 id="xiaofan-hus-resume">Xiaofan Hu’s Resume</h1>
+<h2 id="summary">Summary</h2>
+<ul>
+<li>Name: Xiaofan Hu</li>
+<li>Email: xiaofan.xhu@gmail.com</li>
+<li>Phone: +86 15224019502</li>
+<li>GitHub: https://github.com/bom-d-van</li>
+<li>Blog: https://www.xhu.buzz/</li>
+</ul>
+<p>I have almost 10 years of experience being a software engineer,
+covering from front end all the way to the back end systems and am
+familiar with scaling and developing highly concurrent, highly available
+distributed systems.</p>
+<p>My current focus is in highly available infrastructure services,
+distributed systems, database kernel development (both TSDB and
+general), and system programming.</p>
+<ul>
+<li>Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby,
+Python, Rust.</li>
+<li>Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes,
+Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE, uWSGI,
+Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.</li>
+</ul>
+<h2
+id="october-2017---july-2022-booking.com-amsterdam-netherlands">October
+2017 - July 2022 (Booking.com Amsterdam, Netherlands)</h2>
+<ul>
+<li>Title: Developer/Senior Developer</li>
+<li>Company scale: 2,000+ Tech/10,000+ Total</li>
+<li>Tech: Time Series Database, Go, Perl, Large Scale Distributed
+Systems, Site Reliability Engineering, Kubernetes, Helm, System
+Programming, Ansible, Puppet, Java</li>
+</ul>
+<p>Achievements:</p>
+<ul>
+<li>Scaling large scale distributed time series systems (Graphite)
+<ul>
+<li>Scale: 1k+ servers, 1+ PB SSD storage, 500+ million uniq metrics,
+2k+ QPS, 30m+ data points per second on ingestion.</li>
+<li>Research, design and implement a new file format that enables
+compression, based on <a
+href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">the Facebook
+Gorilla compression algorithm</a> and achieves the disk space usage
+reduction of 30% - 70% (different cluster behaviors differently).</li>
+<li>Design and implementing a new index algorithm by adopting <a
+href="https://swtch.com/~rsc/regexp/regexp1.html">NFA+DFA algorithms
+introduced by Russ Cox</a> that is able to support 10 - 40 millions uniq
+metric paths with low indexing overhead and low tail latencies.</li>
+<li>Design and implement a <a
+href="https://www.xhu.buzz/ctrie/ctrie.html">lockless and concurrent
+trie indexing</a> that were able to reduce memory usage and supports
+real time indexing</li>
+<li>Design and implement a highly performant <a
+href="https://github.com/go-graphite/go-carbon/pull/420">Quota
+subsystems</a> that is able to reduce the noisy neighbor effect in a
+multi-tenant environment and achieves efficient resource management and
+control</li>
+<li>Optimize the rebalance tool for the systems, by introducing <a
+href="https://github.com/go-graphite/buckytools/pull/26">a
+self-regulated mechanism using health check and jitters</a>, the changes
+has produced faster and adjustable sync rate and enhances
+observability.</li>
+</ul></li>
+<li>Scaling and maintaining a large scale distributed config management
+system
+<ul>
+<li>Scale: 8k RPS, 1300+ backend systems and 60k+ client end points
+depending on the system</li>
+<li>Scaling the API backend to support high concurrency and high
+availability</li>
+<li>Define and implement SLI and SLO metrics, including Availability,
+Propagation Latency, Error Rate, Request distributions across different
+backends and roles, etc.</li>
+<li>Optimize Perl clients</li>
+</ul></li>
+<li>Scaling large scale distributed config management system
+<ul>
+<li>Scale the API backend to support 60k endpoints</li>
+<li>Define and implement SLI and SLO for monitoring propagation
+latencies, usage and scale RPS on a per role basis.</li>
+</ul></li>
+<li>Site Reliability Engineering
+<ul>
+<li>Maintain multiple medium and small backend roles (servers ranging
+from 10 to 100s), debug production issues and being on-call.</li>
+<li>Design and implement an internal auto-capacity testing system
+targeting envoy based systems by interacting with an internal control
+plane API.</li>
+<li>Design and implement an uWSGI timeout callback mechanism for logging
+automation that’s called <a
+href="https://github.com/unbit/uwsgi/pull/2212">Graceful
+Harakiri</a>.</li>
+<li>Research and implement EBPF based tooling for <a
+href="https://www.xhu.buzz/bpftrace/debug_osq_lock.html">debugging
+production issues</a></li>
+<li>Debug and resolve a <a
+href="https://github.com/hashicorp/vault/issues/11178">storage leakage
+Bug</a> in Hashicorp Vault production system.</li>
+</ul></li>
+<li>Develop and scale a new fast partner signup channel/product.</li>
+</ul>
+<h2 id="september-2016---august-2017-ucloud-shanghai-china">September
+2016 - August 2017 (UCloud Shanghai, China)</h2>
+<ul>
+<li>Title: Web Development Engineer</li>
+<li>Company scale: 500+</li>
+<li>Tech: Go, Bash, C++, Linux, TC, Networking, DPDK</li>
+</ul>
+<p>Achievements:</p>
+<p>Maintain and develop the traffic control system which is an important
+part of networking control, using C++, Go, Bash etc. Responsibilities
+and Experiences included:</p>
+<ul>
+<li>Develop an accounting system for bandwidth usage monitoring and
+operations</li>
+<li>Use Quagga and Keepalived to implement Redis high availability
+across different data centers in the same region</li>
+<li>Develop new ingress traffic control feature in</li>
+<li>System problems on-call, writing up scripts for data consistency
+checking and log error monitoring</li>
+</ul>
+<h2 id="may-2013---august-2016-the-plant-hangzhou-chinatokyo-japan">May
+2013 - August 2016 (The Plant Hangzhou, China/Tokyo, Japan)</h2>
+<ul>
+<li>Title: Developer</li>
+<li>Company scale: 50+</li>
+<li>Tech: Go, Bash, Ruby on Rails, Linux</li>
+</ul>
+<p>Achievements:</p>
+<ul>
+<li>Mainly worked and maintained two EC projects in Go and a few other
+smallish projects like product recommendations (by using Mahout), and a
+react project. Responsibilities and Experiences included:
+<ul>
+<li>Research and implement a <a
+href="https://github.com/bom-d-van/binpacking">3D Bin Packing</a>
+algorithm and achieves optimized packaging cost estimation</li>
+<li>Order and Payment(first GMO, then migrated to Stripe) User
+register/login, products management</li>
+<li>Memory leak problem fixes</li>
+<li>Unit/Integration tests</li>
+<li>System deployment and maintenance etc</li>
+</ul></li>
+<li>Worked on Qortex, a communication platform designed and made for
+high performance teams. Experiences and Personal highlights included:
+<ul>
+<li>VirtualBox Packaging with auto-updates support for Enterprise
+users</li>
+<li>Go package management (Pak)</li>
+<li>Deployment/migration automation script (developed later into
+Harp)</li>
+<li>Email processing/sending (Beanstalkd, SMTP)</li>
+<li>Chatting (Ejabberd Integration) API maintenance</li>
+</ul></li>
+</ul>
+<h2
+id="may-2010---feb-2013-student-developer-in-wando-lab-huizhou-university">May
+2010 - Feb 2013 Student Developer in Wando Lab, HuiZhou University</h2>
+<p>Involved in the design and development of two ERP (Enterprise
+Resource Planning) systems in RoR and Ext JS. It’s a great learning
+experience and an excellent environment for helping improve programming
+and collaboration skills.</p>
+<h2 id="open-source-projects">Open Source Projects</h2>
+<ul>
+<li><a href="https://github.com/go-graphite/go-carbon">Go-Carbon</a>:
+Graphite Storage in Go.</li>
+<li><a href="https://github.com/bom-d-van/harp">Harp</a>: A Go
+application deployment tool.</li>
+<li><a href="https://github.com/bom-d-van/binpacking">3D Bin
+Packing</a>: A Golang 3D Bin Packing Implementation</li>
+<li><a href="https://github.com/theplant/assettube">AssetTube</a>: A
+tool for fingerprinting and serving asset files for Go Web
+applications.</li>
+<li><a href="https://github.com/bom-d-van/chttp">CHTTP</a>: A stupid and
+incomplete http/http2 C implementation, built for learning C.</li>
+<li><a href="https://github.com/bom-d-van/plperf">plperf</a>: A tracing
+program for uwsgi+perl environment, using ebpf and perl dtrace, in
+Go.</li>
+<li><a href="https://github.com/theplant/pak">Pak</a>: A Go package
+version management tool.</li>
+</ul>
+<h2 id="education">Education</h2>
+<p>Bachelor of Network Engineering, from September 2009 till June 2013,
+at Huizhou University of Guangdong China.</p>
