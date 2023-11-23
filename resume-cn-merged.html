@@ -8,8 +8,7 @@
 <li>GitHub: https://github.com/bom-d-van</li>
 <li>博客： https://www.xhu.buzz/</li>
 </ul>
-<p>近十年的互联网工作经验，涵盖了前中后端，高可用，高流量分布式系统的开发和维护。</p>
-<p>目前工作重心主要放在高可用基础架构服务，分布式系统，数据库内核开发，和系统编程。</p>
+<p>我有近十年的互联网及软件开发和运维的工作经验，涵盖了前中后端，高可用，高流量分布式系统的开发和维护，既有从零到一实现项目的经验，也治理和拓展过大型分布式和复杂系统。</p>
 <ul>
 <li>编程语言：Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.</li>
 <li>相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL),
@@ -17,12 +16,50 @@ Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE,
 uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.</li>
 </ul>
 <h2 id="主要工作经验">主要工作经验</h2>
+<h2 id="年9月---现在-元戎启行-中国深圳">2022年9月 - 现在 (元戎启行
+中国深圳)</h2>
+<ul>
+<li>职位: 高级研发工程师</li>
+<li>公司规模：400+研发</li>
+<li>技术栈: Go, Kubernetes, Traefik, External-DNS/dnscmd, PKCS11,
+OpenTelemetry, Salt, Terraform, MAAS, AliCloud</li>
+</ul>
+<p>主要经验:</p>
+<ul>
+<li>Kubernetes Infra
+<ul>
+<li>通过dnscmd对接Windows DNS Server和External-DNS的rfc2136
+provider的服务接口，实现K8S服务的域名在内网DNS服务器注册自动化</li>
+<li>将公司内部k8s项目使用的helm2升级到helm3，过程中需要设计和实现迁移逻辑和向后兼容现有部署逻辑</li>
+<li>通过Traefik IngressRoute实现微服务泳道功能</li>
+</ul></li>
+<li>Infra As Code (IAC) and GitOps
+<ul>
+<li>设计和实现了通过saltstack同步管理车载系统和服务器系统的配置管理的Infra逻辑</li>
+<li>设计和实现了terraform dns
+provider用于管理内网和阿里云的内部域名</li>
+<li>拓展了terraform-maas支持更多的MAAS资源管理</li>
+</ul></li>
+<li>设计和实现了一个MTLS服务代理，用于管理和使用通过nvpkcs11加解密的服务根证书和设备证书</li>
+<li>SRE duty: firefighting, server management, etc.
+<ul>
+<li>Debug
+K8S集群间的网络问题和IO问题（网卡固件bug和系统盘和数据盘无物理隔离）</li>
+<li>Debug K8S服务的延时和连通性问题</li>
+</ul></li>
+<li>Artifact仓库管理 (Nexus和内部工具实现)
+<ul>
+<li>管理托管于Nexus的Artifactory仓库，Debug各种服务问题和做水平扩容</li>
+<li>设计和实现一个更高性能的APT/Debian
+Package仓库(tinydeb)用于替换Nexus的APT仓库功能，有10倍以上的性能优化</li>
+</ul></li>
+</ul>
 <h3 id="年10月---2022年7月-booking.com-荷兰阿姆斯特丹">2017年10月 -
 2022年7月 (Booking.com 荷兰阿姆斯特丹)</h3>
 <ul>
 <li>职位：研发工程师/高级研发工程师</li>
 <li>公司规模：2000+研发/10000+非研发</li>
-<li>技术栈: Time Series Database, Go, Perl, Large Scale Distributed
+<li>技术栈: Time Series Database, Go, Perl, C, Large Scale Distributed
 Systems, Site Reliability Engineering, Kubernetes, Helm, System
 Programming, Ansible, Puppet, Java</li>
 </ul>
@@ -31,7 +68,7 @@ Programming, Ansible, Puppet, Java</li>
 <li>研发和维护高可用大型分布式时序数据库Go-Graphite（存储和查询方向）
 <ul>
 <li>规模：1千多台服务器，PB级数据量(SSD)，5亿Unique Metrics (3
-replicas)，2k+ QPS，3千万data point每秒的Ingestion</li>
+replicas)，2k+ QPS，3千万data points每秒的Ingestion</li>
 <li>设计和实现了基于<a
 href="https://www.vldb.org/pvldb/vol8/p1816-teller.pdf">Facebook的Gorilla论文</a>中描述的Gorilla<a
 href="https://www.xhu.buzz/how-to-shrink-whisper-files/">时序数据压缩算法的新存储文件结构</a>，达到了30%-70%的压缩率。</li>
@@ -61,7 +98,7 @@ Rate, 后端系统请求分布情况等</li>
 <ul>
 <li>运维管理多个中小型后端系统(规模从10到100多台服务器)，debug和oncall各种生产环境问题</li>
 <li>实现了针对公司内部envoy控制面的自动压测系统</li>
-<li>实现了uwsgi上超时回调机制用于收集线上系统<a
+<li>实现了uwsgi上超时回调机制用于收集线上系统异常时间和日志：<a
 href="https://github.com/unbit/uwsgi/pull/2212">Graceful
 Harakiri</a></li>
 <li>研发和使用EBPF工具debug<a
@@ -98,7 +135,7 @@ href="https://github.com/hashicorp/vault/issues/11178">存储泄漏的Bug</a></l
 <li>研发和维护了两个电子商务相关的项目
 <ul>
 <li>调研和实现了一个<a href="https://github.com/bom-d-van/binpacking">3D
-Bin Packing</a>算法，自动化了打包成本计算</li>
+Bin Packing</a>算法，自动化了打包成本计算并优于人工结果</li>
 <li>集成基于Mahout的产品推荐算法</li>
 <li>对GMO和Stripe的订单和支付系统的集成</li>
 <li>用户注册登陆，产品管理模块的研发</li>

@@ -8,7 +8,7 @@
 * GitHub: https://github.com/bom-d-van
 * Blog: https://www.xhu.buzz/
 
-I'm seasoned and humbled software developer, with extensive experiences and skills of building systems (be it web applications or system toolings). I like solving hard problems and I enjoy meaningful works. I'm easy to talk to, extremely communicative, and supportive of colleagues and company strategies.
+I'm seasoned and humbled software developer, with extensive experiences and skills of building systems (be it web applications or low level system tooling). I like solving hard problems and I enjoy meaningful works. I'm easy to talk to, extremely communicative, and supportive of colleagues and company strategies.
 
 * Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
 * Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
@@ -21,17 +21,22 @@ I'm seasoned and humbled software developer, with extensive experiences and skil
 
 Achievements:
 
-* Integrated Kubernetes Ingress DNS name registration in Private DNS server
-  * Implemented a dns server (as the rfc2136 provider for external-dns) running on a windows DNS server
-  * Implemented a terraform provider for IAC management
-* Implemented infra and migrations logics of helm2 to helm3
-* Implemented the infra IAC logics using saltstack for managing both on-board systems on autonomous vehicles and servers
-* Extended the MAAS terraform provider to improve our internal IAC management process.
-* Implemented microservice traffic routing (dabbed as "swimlane") using traefik IngressRoute on Kubernetes.
+* Kubernetes Infra
+  * Integrated Kubernetes Ingress DNS name registration in Private DNS server
+    * Implemented a DNS server (as the rfc2136 provider for external-dns) running on a windows DNS server
+  * Implemented infra and migrations logics of helm2 to helm3
+  * Implemented microservice traffic routing (dabbed as "swimlane") using traefik IngressRoute on Kubernetes.
+* Infra As Code (IAC) and Gitops
+  * Implemented the infra IAC logics using saltstack for managing both on-board systems on autonomous vehicles and servers
+  * Implemented a terraform DNS providers for DNS records provision
+  * Extended the MAAS terraform provider to improve our internal IAC management process.
 * Implemented a MTLS proxy daemon, root and device certificate protection using nvpkcs11.
 * SRE duty: firefighting, server management, etc.
-  * Identified and resolved a networking issues between 2 kubernetes clusters (traced down packets being dropped on the client side due to NIC firmware bugs)
+  * Identified and resolved a networking issues between 2 Kubernetes clusters (traced down packets being dropped on the client side due to NIC firmware bugs)
   * Debugged latency and connectivity issues of artifact repository tools like nexus and harbor
+* Artifact Repository Management (Nexus and internal tooling)
+  * Manage and scale nexus infra
+  * Design and implemented a scalable apt/debian package repository (tinydeb)
 
 ## October 2017 - July 2022 (Booking.com Amsterdam, Netherlands)
 

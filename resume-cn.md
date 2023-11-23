@@ -9,14 +9,36 @@
 * GitHub: https://github.com/bom-d-van
 * 博客： https://www.xhu.buzz/
 
-近十年的互联网工作经验，涵盖了前中后端，高可用，高流量分布式系统的开发和维护。
-
-目前工作重心主要放在高可用基础架构服务，分布式系统，数据库内核开发，和系统编程。
+我有近十年的互联网及软件开发和运维的工作经验，涵盖了前中后端，高可用，高流量分布式系统的开发和维护，既有从零到一实现项目的经验，也治理和拓展过大型分布式和复杂系统。
 
 * 编程语言：Go, C, C++, Bash, Perl, Java, JS, Ruby, Python, Rust.
 * 相关技术：Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes, Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE, uWSGI, Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.
 
 ## 主要工作经验
+
+## 2022年9月 - 现在 (元戎启行 中国深圳)
+
+* 职位: 高级研发工程师
+* 公司规模：400+研发
+* 技术栈: Go, Kubernetes, Traefik, External-DNS/dnscmd, PKCS11, OpenTelemetry, Salt, Terraform, MAAS, AliCloud
+
+主要经验:
+
+* Kubernetes Infra
+  * 通过dnscmd对接Windows DNS Server和External-DNS的rfc2136 provider的服务接口，实现K8S服务的域名在内网DNS服务器注册自动化
+  * 将公司内部k8s项目使用的helm2升级到helm3，过程中需要设计和实现迁移逻辑和向后兼容现有部署逻辑
+  * 通过Traefik IngressRoute实现微服务泳道功能
+* Infra As Code (IAC) and GitOps
+  * 设计和实现了通过saltstack同步管理车载系统和服务器系统的配置管理的Infra逻辑
+  * 设计和实现了terraform dns provider用于管理内网和阿里云的内部域名
+  * 拓展了terraform-maas支持更多的MAAS资源管理
+* 设计和实现了一个MTLS服务代理，用于管理和使用通过nvpkcs11加解密的服务根证书和设备证书
+* SRE duty: firefighting, server management, etc.
+  * Debug K8S集群间的网络问题和IO问题（网卡固件bug和系统盘和数据盘无物理隔离）
+  * Debug K8S服务的延时和连通性问题
+* Artifact仓库管理 (Nexus和内部工具实现)
+  * 管理托管于Nexus的Artifactory仓库，Debug各种服务问题和做水平扩容
+  * 设计和实现一个更高性能的APT/Debian Package仓库(tinydeb)用于替换Nexus的APT仓库功能，有10倍以上的性能优化
 
 ### 2017年10月 - 2022年7月 (Booking.com 荷兰阿姆斯特丹)
 
@@ -27,7 +49,7 @@
 主要经验:
 
 * 研发和维护高可用大型分布式时序数据库Go-Graphite（存储和查询方向）
-  * 规模：1千多台服务器，PB级数据量(SSD)，5亿Unique Metrics (3 replicas)，2k+ QPS，3千万data point每秒的Ingestion
+  * 规模：1千多台服务器，PB级数据量(SSD)，5亿Unique Metrics (3 replicas)，2k+ QPS，3千万data points每秒的Ingestion
   * 设计和实现了基于[Facebook的Gorilla论文](https://www.vldb.org/pvldb/vol8/p1816-teller.pdf)中描述的Gorilla[时序数据压缩算法的新存储文件结构](https://www.xhu.buzz/how-to-shrink-whisper-files/)，达到了30%-70%的压缩率。
   * 设计和实现了基于Russ Cox的DFA算法的[Globbing查询算法的前缀树索引](https://www.xhu.buzz/to-glob-10m-metrics-using-trie-and-dfa/)，实现了高性能的索引效率和低延迟的查询，支持单台服务器高效索引10-40 Millions Metrics。
   * 设计和实现了[Lockless and concurrent 前缀树索引](https://www.xhu.buzz/ctrie/ctrie.html)，减少了数据库内存消耗，支持实时索引新数据

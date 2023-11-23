@@ -7,19 +7,64 @@
 <li>GitHub: https://github.com/bom-d-van</li>
 <li>Blog: https://www.xhu.buzz/</li>
 </ul>
-<p>I have almost 10 years of experience being a software engineer,
-covering from front end all the way to the back end systems and am
-familiar with scaling and developing highly concurrent, highly available
-distributed systems.</p>
-<p>My current focus is in highly available infrastructure services,
-distributed systems, database kernel development (both TSDB and
-general), and system programming.</p>
+<p>I’m seasoned and humbled software developer, with extensive
+experiences and skills of building systems (be it web applications or
+low level system tooling). I like solving hard problems and I enjoy
+meaningful works. I’m easy to talk to, extremely communicative, and
+supportive of colleagues and company strategies.</p>
 <ul>
 <li>Programming languages: Go, C, C++, Bash, Perl, Java, JS, Ruby,
 Python, Rust.</li>
 <li>Tech: Linux, TSDB (Graphite), SQL DB (MySQL/PostgreSQL), Kubernetes,
 Container/Docker, Redis, Ruby on Rails, EBPF, SLI/SLO, SRE, uWSGI,
 Puppet, Protobuf/GRPC, ReactJS/jQuery/Backbone/ExtJS/etc.</li>
+</ul>
+<h2 id="september-2022---now-deeproute.ai-shenzhen-china">September 2022
+- Now (Deeproute.ai Shenzhen, China)</h2>
+<ul>
+<li>Title: Senior Developer</li>
+<li>Company scale: 500+</li>
+<li>Tech: Go, Kubernetes, Traefik, External-DNS/dnscmd, PKCS11,
+OpenTelemetry, Salt, Terraform, MAAS, AliCloud</li>
+</ul>
+<p>Achievements:</p>
+<ul>
+<li>Kubernetes Infra
+<ul>
+<li>Integrated Kubernetes Ingress DNS name registration in Private DNS
+server
+<ul>
+<li>Implemented a DNS server (as the rfc2136 provider for external-dns)
+running on a windows DNS server</li>
+</ul></li>
+<li>Implemented infra and migrations logics of helm2 to helm3</li>
+<li>Implemented microservice traffic routing (dabbed as “swimlane”)
+using traefik IngressRoute on Kubernetes.</li>
+</ul></li>
+<li>Infra As Code (IAC) and Gitops
+<ul>
+<li>Implemented the infra IAC logics using saltstack for managing both
+on-board systems on autonomous vehicles and servers</li>
+<li>Implemented a terraform DNS providers for DNS records provision</li>
+<li>Extended the MAAS terraform provider to improve our internal IAC
+management process.</li>
+</ul></li>
+<li>Implemented a MTLS proxy daemon, root and device certificate
+protection using nvpkcs11.</li>
+<li>SRE duty: firefighting, server management, etc.
+<ul>
+<li>Identified and resolved a networking issues between 2 Kubernetes
+clusters (traced down packets being dropped on the client side due to
+NIC firmware bugs)</li>
+<li>Debugged latency and connectivity issues of artifact repository
+tools like nexus and harbor</li>
+</ul></li>
+<li>Artifact Repository Management (Nexus and internal tooling)
+<ul>
+<li>Manage and scale nexus infra</li>
+<li>Design and implemented a scalable apt/debian package repository
+(tinydeb)</li>
+</ul></li>
 </ul>
 <h2
 id="october-2017---july-2022-booking.com-amsterdam-netherlands">October
@@ -72,12 +117,6 @@ availability</li>
 Propagation Latency, Error Rate, Request distributions across different
 backends and roles, etc.</li>
 <li>Optimize Perl clients</li>
-</ul></li>
-<li>Scaling large scale distributed config management system
-<ul>
-<li>Scale the API backend to support 60k endpoints</li>
-<li>Define and implement SLI and SLO for monitoring propagation
-latencies, usage and scale RPS on a per role basis.</li>
 </ul></li>
 <li>Site Reliability Engineering
 <ul>
